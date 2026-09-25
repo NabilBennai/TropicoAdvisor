@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Tropico.Analysis.Tests/Tropico.Analysis.Tests.csproj" />
+    <Project Path="tests/Tropico.Desktop.Tests/Tropico.Desktop.Tests.csproj" />
     <Project Path="tests/Tropico.SaveParser.Tests/Tropico.SaveParser.Tests.csproj" />
   </Folder>
 </Solution>

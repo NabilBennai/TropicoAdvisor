@@ -17,10 +17,13 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var viewModel = new MainViewModel();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(),
+                DataContext = viewModel,
             };
+
+            _ = viewModel.RefreshCommand.ExecuteAsync(null); // list the saves and analyse the latest one
         }
 
         base.OnFrameworkInitializationCompleted();

@@ -1,22 +1,131 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Tropico.Desktop.ViewModels"
+        xmlns:services="using:Tropico.Desktop.Services"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="640"
         x:Class="Tropico.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Tropico.Desktop">
+        Width="900" Height="640"
+        Title="Tropico Advisor">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <!-- Design-time only: the runtime DataContext is set in App.axaml.cs -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <Window.Styles>
+        <Style Selector="Border.card">
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+        </Style>
+        <Style Selector="Border.finding">
+            <Setter Property="BorderThickness" Value="4,0,0,0" />
+            <Setter Property="BorderBrush" Value="Gray" />
+        </Style>
+        <Style Selector="Border.finding.warning">
+            <Setter Property="BorderBrush" Value="Orange" />
+        </Style>
+        <Style Selector="Border.finding.critical">
+            <Setter Property="BorderBrush" Value="Crimson" />
+        </Style>
+        <Style Selector="Border.finding.uncertain TextBlock.message">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+        <Style Selector="TextBlock.caption">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.65" />
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Window.Styles>
 
+    <DockPanel Margin="16">
+
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+            <Button DockPanel.Dock="Right" Content="Refresh" Margin="8,0,0,0"
+                    Command="{Binding RefreshCommand}" />
+            <ComboBox ItemsSource="{Binding Saves}"
+                      SelectedItem="{Binding SelectedSave}"
+                      HorizontalAlignment="Stretch"
+                      PlaceholderText="Select a Tropico 6 save">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="services:SaveFileItem">
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </DockPanel>
+
+        <TextBlock DockPanel.Dock="Top" Text="Analysing save..." IsVisible="{Binding IsBusy}" Margin="0,0,0,8" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage}" Foreground="Crimson"
+                   IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   TextWrapping="Wrap" Margin="0,0,0,8" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding StatusMessage}"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   Margin="0,0,0,8" />
+
+        <ScrollViewer IsVisible="{Binding Report, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl Content="{Binding Report}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="vm:IslandReportViewModel">
+                        <StackPanel Spacing="12">
+
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Classes="caption" Text="{Binding GameBuild}" />
+                            </StackPanel>
+
+                            <UniformGrid Columns="3">
+                                <Border Classes="card" Margin="0,0,8,0">
+                                    <StackPanel>
+                                        <TextBlock Classes="caption" Text="Buildings" />
+                                        <TextBlock Classes="value" Text="{Binding Buildings}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Classes="card" Margin="4,0">
+                                    <StackPanel>
+                                        <TextBlock Classes="caption" Text="Citizens" />
+                                        <TextBlock Classes="value" Text="{Binding Citizens}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Classes="card" Margin="8,0,0,0">
+                                    <StackPanel>
+                                        <TextBlock Classes="caption" Text="Treasury" />
+                                        <TextBlock Classes="value" Text="{Binding Treasury}" />
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <TextBlock Text="Findings" FontSize="16" FontWeight="SemiBold" />
+                            <TextBlock Classes="caption" Text="No findings." IsVisible="{Binding !HasFindings}" />
+                            <ItemsControl ItemsSource="{Binding Findings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:FindingViewModel">
+                                        <Border Classes="card finding" Margin="0,0,0,8"
+                                                Classes.warning="{Binding IsWarning}"
+                                                Classes.critical="{Binding IsCritical}"
+                                                Classes.uncertain="{Binding IsUncertain}">
+                                            <StackPanel>
+                                                <TextBlock Classes="message" Text="{Binding Message}" TextWrapping="Wrap" />
+                                                <TextBlock Classes="caption" Text="{Binding Label}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Most common buildings" FontSize="16" FontWeight="SemiBold" />
+                            <ItemsControl ItemsSource="{Binding TopBuildings}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </ScrollViewer>
+    </DockPanel>
 </Window>
