@@ -1,5 +1,6 @@
 namespace Tropico.SaveParser.Tests;
 
+[Trait("Category", "RealSave")]
 public class T6PoliticsTests
 {
     private static readonly Lazy<T6Politics> Politics = new(() => T6PoliticsReader.Read(T6SaveReader.Read(T6SaveReaderTests.FindSample())));
