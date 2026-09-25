@@ -1,3 +1,4 @@
+using Tropico.Analysis;
 using Tropico.SaveParser;
 
 Console.WriteLine("Tropico Advisor CLI");
@@ -81,3 +82,10 @@ foreach (var group in buildings.GroupBy(b => b.ClassName).OrderByDescending(g =>
 
 Console.WriteLine($"Citizens: {stats.Population.Total} (adults {stats.Population.Adults}, children {stats.Population.Children})");
 Console.WriteLine($"Treasury: {stats.Treasury:N0}");
+
+Console.WriteLine();
+Console.WriteLine("Findings:");
+foreach (var finding in new IslandAnalyzer().Analyze(save).Findings)
+{
+    Console.WriteLine($"- [{finding.Severity}/{finding.Confidence}] {finding.Message}");
+}
