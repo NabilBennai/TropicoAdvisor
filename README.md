@@ -55,6 +55,11 @@ Suggestions are leads to check, not orders: thresholds (unemployment, happiness,
 game rules. What is known and what is still assumed about the save format is documented in
 [`docs/reverse_engineering_report.md`](docs/reverse_engineering_report.md).
 
+## Publishing
+
+`./tools/publish.ps1` builds one self-contained `Tropico.Desktop.exe` (about 100 MB, no .NET install needed) into `publish/`.
+The executable is not signed: Windows Smart App Control or SmartScreen may block it on a machine that enforces them.
+
 ## Projects
 
 - `Tropico.SaveParser` - Tropico 6 save file parser: container, name table, object table, tagged properties, and typed readers

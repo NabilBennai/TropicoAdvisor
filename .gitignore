@@ -490,3 +490,4 @@ $RECYCLE.BIN/
 
 # Python prototype output (dumps of local saves)
 /out/
+/publish/
