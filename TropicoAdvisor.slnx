@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Tropico.Analysis/Tropico.Analysis.csproj" />
+    <Project Path="src/Tropico.Cli/Tropico.Cli.csproj" />
+    <Project Path="src/Tropico.Data/Tropico.Data.csproj" />
+    <Project Path="src/Tropico.Desktop/Tropico.Desktop.csproj" />
+    <Project Path="src/Tropico.SaveParser/Tropico.SaveParser.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Tropico.Analysis.Tests/Tropico.Analysis.Tests.csproj" />
+    <Project Path="tests/Tropico.SaveParser.Tests/Tropico.SaveParser.Tests.csproj" />
+  </Folder>
+</Solution>
