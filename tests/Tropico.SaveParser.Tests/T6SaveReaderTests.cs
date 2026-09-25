@@ -38,6 +38,28 @@ public class T6SaveReaderTests
     }
 
     [Fact]
+    public void Read_ReferenceSave_ParsesNameTable()
+    {
+        var table = T6SaveReader.Read(FindSample()).NameTable;
+
+        Assert.Equal(1192, table.Names.Count);
+        Assert.Equal(0x6B5C, table.EndOffset);
+        Assert.Equal("None", table.Names[0]);
+        Assert.Equal("AgentList", table.Names[1]);
+        Assert.Equal("ArrayProperty", table.Names[2]);
+        Assert.Equal("ObjectProperty", table.Names[3]);
+        Assert.Contains("IntProperty", table.Names);
+        Assert.Contains("StructProperty", table.Names);
+    }
+
+    [Fact]
+    public void NameTable_Truncated_Throws()
+    {
+        var data = new byte[] { 2, 0, 0, 0, 5, 0, 0, 0, (byte)'N', (byte)'o', (byte)'n', (byte)'e', 0 };
+        Assert.Throws<InvalidDataException>(() => T6NameTable.Parse(data));
+    }
+
+    [Fact]
     public void Read_BadSignature_Throws()
     {
         var bytes = new byte[128];

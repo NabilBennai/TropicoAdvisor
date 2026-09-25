@@ -57,3 +57,11 @@ Console.WriteLine($"Save: {save.Header.SaveName}");
 Console.WriteLine($"Map: {save.Header.MapId}");
 Console.WriteLine($"Compressed offset: 0x{save.Header.CompressedDataOffset:X}");
 Console.WriteLine($"Decompressed size: {save.DecompressedData.Length}");
+
+Console.WriteLine($"Names: {save.NameTable.Names.Count}");
+Console.WriteLine($"Name table end: 0x{save.NameTable.EndOffset:X}");
+Console.WriteLine("First names:");
+foreach (var name in save.NameTable.Names.Take(10))
+{
+    Console.WriteLine($"- {name}");
+}

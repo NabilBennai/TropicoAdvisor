@@ -36,6 +36,7 @@ public static class T6SaveReader
         {
             Header = ParseHeader(file, build, offset),
             DecompressedData = data,
+            NameTable = T6NameTable.Parse(data),
         };
     }
 
