@@ -20,6 +20,9 @@ public sealed class T6ObjectRecord
     public int? OwnerIndex { get; init; }
 
     public bool HasBlob => BlobOffset.HasValue;
+
+    /// <summary>Last segment of the path after the final '/' or '.', e.g. <c>BP_T6Bunkhouse_C</c> or <c>T6Agent</c>.</summary>
+    public string ShortName => Path[(Path.LastIndexOfAny(['/', '.']) + 1)..];
 }
 
 public sealed class T6ObjectTable

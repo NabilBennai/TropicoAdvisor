@@ -68,3 +68,16 @@ foreach (var name in save.NameTable.Names.Take(10))
 
 Console.WriteLine($"Objects: {save.ObjectTable.Objects.Count}");
 Console.WriteLine($"Blob base: 0x{save.ObjectTable.BlobBaseOffset:X}");
+
+var buildings = T6BuildingReader.Read(save);
+var stats = T6IslandStatisticsReader.Read(save);
+
+Console.WriteLine();
+Console.WriteLine($"Buildings: {buildings.Count}");
+foreach (var group in buildings.GroupBy(b => b.ClassName).OrderByDescending(g => g.Count()).Take(5))
+{
+    Console.WriteLine($"- {group.Key}: {group.Count()}");
+}
+
+Console.WriteLine($"Citizens: {stats.Population.Total} (adults {stats.Population.Adults}, children {stats.Population.Children})");
+Console.WriteLine($"Treasury: {stats.Treasury:N0}");
