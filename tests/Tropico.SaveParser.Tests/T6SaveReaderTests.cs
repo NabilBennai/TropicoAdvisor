@@ -6,7 +6,7 @@ public class T6SaveReaderTests
 {
     private const string SampleName = "Trop6_Sav_urss Oct, 1934.t6sav";
 
-    private static string FindSample()
+    internal static string FindSample()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
         {
