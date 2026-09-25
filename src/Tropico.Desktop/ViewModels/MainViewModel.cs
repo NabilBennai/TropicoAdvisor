@@ -19,6 +19,8 @@ public partial class MainViewModel : ViewModelBase
     private readonly ISaveAnalysisService _service;
     private readonly Translator _translator;
     private readonly ISettingsStore? _settings;
+    private readonly IHistoryService? _historyService;
+    private HistoryResult? _history;
     private int _loadVersion;
     private IslandReport? _report;
     private bool _initialising = true;
@@ -26,13 +28,18 @@ public partial class MainViewModel : ViewModelBase
     private (string Save, string Detail)? _error;
 
     /// <summary>The application: real save folder, saved language choice, the shared translator used by the XAML labels.</summary>
-    public MainViewModel() : this(new SaveAnalysisService(), Translator.Instance, new FileSettingsStore(), useSystemLanguage: true)
+    public MainViewModel() : this(
+        new SaveAnalysisService(), Translator.Instance, new FileSettingsStore(), useSystemLanguage: true,
+        history: new HistoryService(new Tropico.Data.SqliteSnapshotStore()))
     {
     }
 
-    public MainViewModel(ISaveAnalysisService service, Translator? translator = null, ISettingsStore? settings = null, bool useSystemLanguage = false)
+    public MainViewModel(
+        ISaveAnalysisService service, Translator? translator = null, ISettingsStore? settings = null, bool useSystemLanguage = false,
+        IHistoryService? history = null)
     {
         _service = service;
+        _historyService = history;
         _translator = translator ?? new Translator();
         _settings = settings;
 
@@ -102,7 +109,7 @@ public partial class MainViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(LayoutDirection));
         RenderMessages();
-        if (_report is not null) Report = new IslandReportViewModel(_report, _translator.Localizer);
+        if (_report is not null) Report = new IslandReportViewModel(_report, _translator.Localizer, _history);
     }
 
     partial void OnSelectedSaveChanged(SaveFileItem? value)
@@ -128,8 +135,12 @@ public partial class MainViewModel : ViewModelBase
             var report = await _service.AnalyzeAsync(save.Path);
             if (version != _loadVersion) return; // a newer selection superseded this one
 
+            var history = _historyService is null ? null : await _historyService.RecordAsync(report);
+            if (version != _loadVersion) return;
+
             _report = report;
-            Report = new IslandReportViewModel(report, _translator.Localizer);
+            _history = history;
+            Report = new IslandReportViewModel(report, _translator.Localizer, history);
         }
         catch (Exception e)
         {
@@ -137,6 +148,7 @@ public partial class MainViewModel : ViewModelBase
             if (version != _loadVersion) return;
 
             _report = null;
+            _history = null;
             Report = null;
             _error = (save.Name, e.Message);
             RenderMessages();

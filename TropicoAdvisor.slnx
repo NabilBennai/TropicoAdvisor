@@ -11,6 +11,7 @@
     <Project Path="tests/Tropico.Analysis.Tests/Tropico.Analysis.Tests.csproj" />
     <Project Path="tests/Tropico.Desktop.Tests/Tropico.Desktop.Tests.csproj" />
     <Project Path="tests/Tropico.Localization.Tests/Tropico.Localization.Tests.csproj" />
+    <Project Path="tests/Tropico.Data.Tests/Tropico.Data.Tests.csproj" />
     <Project Path="tests/Tropico.SaveParser.Tests/Tropico.SaveParser.Tests.csproj" />
   </Folder>
 </Solution>

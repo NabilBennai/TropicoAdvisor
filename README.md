@@ -15,6 +15,7 @@ recent one and has six tabs:
 | Population | Citizens, unemployment, homeless families, happiness by category, education, age groups, housing by tier, history charts |
 | Economy | Yearly revenue and expenses, treasury and monthly charts, revenue / expense breakdown, costliest building classes |
 | Trade | Price, stock, exports and imports per resource, trade routes |
+| Evolution | Comparison with the previous analysed save of the same island: treasury, buildings, population, factions, suggestions appeared / resolved |
 | Politics | Faction standing with its causes (edicts, buildings, demands), active edicts, constitution, elections, demands |
 
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
@@ -54,7 +55,7 @@ game rules. What is known and what is still assumed about the save format is doc
   (buildings, statistics, trade economy, deposits, agents, politics)
 - `Tropico.Analysis` - Island snapshot and rule engine that produces the suggestions
 - `Tropico.Localization` - Languages, translation catalogs and localizable texts
-- `Tropico.Data` - Local historical data storage (not implemented yet)
+- `Tropico.Data` - SQLite history of analysed saves (`%APPDATA%/TropicoAdvisor/history.db`, one snapshot per island and game day) and the comparison behind the Evolution tab
 - `Tropico.Cli` - Prints a save summary and the suggestions in the console
 - `Tropico.Desktop` - Avalonia desktop application
 

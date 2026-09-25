@@ -127,6 +127,12 @@
     <Style Selector="TextBlock.negative">
         <Setter Property="Foreground" Value="{StaticResource TropicoNegativeBrush}" />
     </Style>
+    <Style Selector="TextBlock.good">
+        <Setter Property="Foreground" Value="#3DB37A" />
+    </Style>
+    <Style Selector="TextBlock.bad">
+        <Setter Property="Foreground" Value="{StaticResource TropicoNegativeBrush}" />
+    </Style>
     <Style Selector="TextBlock.head">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />

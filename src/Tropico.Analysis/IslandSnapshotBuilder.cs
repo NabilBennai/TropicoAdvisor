@@ -37,6 +37,8 @@ public static class IslandSnapshotBuilder
             stats.LastSample("HomelessFamiliesByWealthHistory")?.Y ?? [],
             BuildEconomy(trade, stats, buildings))
         {
+            MapId = save.Header.MapId,
+            GameDay = trade.Calendar?.TotalDays,
             PopulationData = BuildPopulation(save, stats, trade.Calendar),
             ProductionData = ProductionSnapshotBuilder.Build(buildings, T6DepositReader.Read(save), trade),
             PoliticsData = PoliticsSnapshotBuilder.Build(T6PoliticsReader.Read(save)),

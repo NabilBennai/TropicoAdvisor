@@ -32,6 +32,12 @@ public sealed record IslandSnapshot(
 {
     public EconomySnapshot Economy => EconomyData ?? EconomySnapshot.Empty;
 
+    /// <summary>Identifier of the generated map: the same island keeps it across all its saves.</summary>
+    public string? MapId { get; init; }
+
+    /// <summary>Total number of game days at the moment of the save (orders the saves of one island).</summary>
+    public int? GameDay { get; init; }
+
     public PopulationDetails? PopulationData { get; init; }
 
     public PopulationDetails PopulationInfo => PopulationData ?? PopulationDetails.Empty;

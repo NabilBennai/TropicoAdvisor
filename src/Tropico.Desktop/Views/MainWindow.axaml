@@ -114,6 +114,24 @@
             </Grid>
         </DataTemplate>
 
+        <DataTemplate DataType="vm:ChangeRow">
+            <Grid ColumnDefinitions="*,110,110,110" Margin="0,2">
+                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Before}" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding Now}" />
+                <TextBlock Grid.Column="3" Classes="num" FontWeight="SemiBold"
+                           Classes.good="{Binding IsGood}" Classes.bad="{Binding IsBad}" Text="{Binding Change}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:SnapshotRow">
+            <Grid ColumnDefinitions="*,120,120" Margin="0,2">
+                <TextBlock Text="{Binding Save}" TextWrapping="Wrap" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding GameDate}" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding AnalysedOn}" />
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="vm:BreakdownRow">
             <Grid ColumnDefinitions="*,110,60" Margin="0,2">
                 <TextBlock Text="{Binding Name}" />
@@ -544,6 +562,60 @@
                                         <TextBlock Grid.Column="7" Classes="head num" Text="{loc:T ui.routes}" />
                                     </Grid>
                                     <ItemsControl ItemsSource="{Binding Goods}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- ============ Evolution ============ -->
+                        <TabItem Header="{loc:T ui.evolution}">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8" DataContext="{Binding EvolutionTab}" x:DataType="vm:EvolutionViewModel">
+
+                                    <Border Classes="card" IsVisible="{Binding !HasComparison}">
+                                        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                                    </Border>
+
+                                    <StackPanel Spacing="12" IsVisible="{Binding HasComparison}">
+                                        <TextBlock Classes="caption" Text="{Binding ComparedWith}" TextWrapping="Wrap" />
+
+                                        <Grid ColumnDefinitions="*,110,110,110">
+                                            <TextBlock Classes="head" Text="{loc:T ui.metric}" />
+                                            <TextBlock Grid.Column="1" Classes="head num" Text="{loc:T ui.before}" />
+                                            <TextBlock Grid.Column="2" Classes="head num" Text="{loc:T ui.now}" />
+                                            <TextBlock Grid.Column="3" Classes="head num" Text="{loc:T ui.change}" />
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding Metrics}" />
+
+                                        <StackPanel IsVisible="{Binding HasBuildingChanges}">
+                                            <TextBlock Classes="section" Text="{loc:T ui.buildingChanges}" />
+                                            <ItemsControl ItemsSource="{Binding BuildingChanges}" />
+                                        </StackPanel>
+
+                                        <StackPanel IsVisible="{Binding HasFactionChanges}">
+                                            <TextBlock Classes="section" Text="{loc:T ui.factionChanges}" />
+                                            <ItemsControl ItemsSource="{Binding FactionChanges}" />
+                                        </StackPanel>
+
+                                        <StackPanel IsVisible="{Binding HasNewFindings}">
+                                            <TextBlock Classes="section" Text="{loc:T ui.newSuggestions}" />
+                                            <ItemsControl ItemsSource="{Binding NewFindings}" />
+                                        </StackPanel>
+
+                                        <StackPanel IsVisible="{Binding HasResolvedFindings}">
+                                            <TextBlock Classes="section" Text="{loc:T ui.resolvedSuggestions}" />
+                                            <ItemsControl ItemsSource="{Binding ResolvedFindings}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel IsVisible="{Binding HasSnapshots}">
+                                        <TextBlock Classes="section" Text="{loc:T ui.analysedSaves}" />
+                                        <Grid ColumnDefinitions="*,120,120">
+                                            <TextBlock Classes="head" Text="{loc:T ui.save}" />
+                                            <TextBlock Grid.Column="1" Classes="head num" Text="{loc:T ui.gameDate}" />
+                                            <TextBlock Grid.Column="2" Classes="head num" Text="{loc:T ui.analysedOn}" />
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding Snapshots}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>

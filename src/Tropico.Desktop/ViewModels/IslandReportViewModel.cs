@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Tropico.Analysis;
+using Tropico.Desktop.Services;
 using Tropico.Localization;
 
 namespace Tropico.Desktop.ViewModels;
@@ -41,7 +42,7 @@ public sealed class IslandReportViewModel
 {
     private const int TopBuildingClasses = 8;
 
-    public IslandReportViewModel(IslandReport report, ILocalizer? localizer = null)
+    public IslandReportViewModel(IslandReport report, ILocalizer? localizer = null, HistoryResult? history = null)
     {
         var loc = localizer ?? Localizer.English;
         var snapshot = report.Snapshot;
@@ -62,7 +63,10 @@ public sealed class IslandReportViewModel
         Population = new PopulationViewModel(snapshot, report.Findings, loc);
         BuildingsTab = new BuildingsViewModel(snapshot, report.Findings, loc);
         PoliticsTab = new PoliticsViewModel(snapshot, report.Findings, loc);
+        EvolutionTab = new EvolutionViewModel(history, loc);
     }
+
+    public EvolutionViewModel EvolutionTab { get; }
 
     public PoliticsViewModel PoliticsTab { get; }
     public BuildingsViewModel BuildingsTab { get; }
