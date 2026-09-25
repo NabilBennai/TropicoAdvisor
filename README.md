@@ -124,3 +124,7 @@ The C# code is the reference implementation; `out/` was produced by the prototyp
 * Windows Smart App Control can block freshly built, unsigned test or application binaries (`0x800711C7`). Running the tests from an
   IDE, or turning that feature off, is a machine setting, not a project one.
 * Not decoded yet: workers, residents, housing capacity and electricity. See the "Not decoded" and "Next steps" sections of the report.
+
+## License
+
+[MIT](LICENSE). Tropico is a trademark of its owners; this project is unofficial and contains no game assets.
