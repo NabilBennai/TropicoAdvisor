@@ -6,7 +6,7 @@ namespace Tropico.SaveParser;
 /// <summary>
 /// Reads the outer container of a Tropico 6 .t6sav file:
 /// "Lama" | u32 | build string (zero padded up to 0x38) | u32 headerLength at 0x38 (zlib offset = headerLength + 8) | ... | zlib stream to EOF.
-/// The name/object tables inside the decompressed data are not decoded here.
+/// The name and object tables are parsed; object blobs are not.
 /// </summary>
 public static class T6SaveReader
 {
@@ -31,12 +31,14 @@ public static class T6SaveReader
         var build = Encoding.ASCII.GetString(file, BuildFieldStart, buildEnd - BuildFieldStart);
 
         var (offset, data) = FindCompressedData(file);
+        var nameTable = T6NameTable.Parse(data);
 
         return new T6SaveFile
         {
             Header = ParseHeader(file, build, offset),
             DecompressedData = data,
-            NameTable = T6NameTable.Parse(data),
+            NameTable = nameTable,
+            ObjectTable = T6ObjectTable.Parse(data, nameTable.EndOffset),
         };
     }
 

@@ -53,6 +53,53 @@ public class T6SaveReaderTests
     }
 
     [Fact]
+    public void Read_ReferenceSave_ParsesObjectTable()
+    {
+        var table = T6SaveReader.Read(FindSample()).ObjectTable;
+
+        // whole table consumed: 11,023 records, blobs start right after
+        Assert.Equal(11_023, table.Objects.Count);
+        Assert.Equal(0x9FDAF, table.BlobBaseOffset);
+        Assert.All(table.Objects.Select((o, i) => (o, i)), x => Assert.Equal(x.i, x.o.Index));
+
+        // first record: agent controller blueprint, blob at offset 0, flag 0
+        var controller = table.Objects[0];
+        Assert.Equal(2, controller.Kind);
+        Assert.EndsWith("BP_T6AgentController_C", controller.Path);
+        Assert.True(controller.HasBlob);
+        Assert.Equal(0u, controller.BlobOffset);
+        Assert.Null(controller.OwnerIndex);
+
+        // agent with blob and 9-byte tail
+        var agent = table.Objects[1];
+        Assert.Equal("/Script/Tropico6.T6Agent", agent.Path);
+        Assert.Equal((byte)1, agent.Flag);
+        Assert.Equal(5954u, agent.BlobOffset);
+        Assert.Equal(0, agent.OwnerIndex);
+
+        // placed building actor: flag 2, 5-byte tail (no owner)
+        var landmark = table.Objects[1451];
+        Assert.EndsWith("BP_T6RegistanofSamarkand_C", landmark.Path);
+        Assert.Equal((byte)2, landmark.Flag);
+        Assert.True(landmark.HasBlob);
+        Assert.Null(landmark.OwnerIndex);
+
+        // kind 3: class reference, no blob at all
+        var classRef = table.Objects[1452];
+        Assert.Equal(3, classRef.Kind);
+        Assert.StartsWith("#/Game/", classRef.Path);
+        Assert.False(classRef.HasBlob);
+        Assert.Null(classRef.Flag);
+        Assert.Equal(483, table.Objects.Count(o => o.Kind == 3));
+
+        // component owned by a building
+        var site = table.Objects[7931];
+        Assert.Equal("/Script/Tropico6.T6ConstructionSiteComponent", site.Path);
+        Assert.Equal(1800, site.OwnerIndex);
+        Assert.EndsWith("_C", table.Objects[1800].Path);
+    }
+
+    [Fact]
     public void NameTable_Truncated_Throws()
     {
         var data = new byte[] { 2, 0, 0, 0, 5, 0, 0, 0, (byte)'N', (byte)'o', (byte)'n', (byte)'e', 0 };

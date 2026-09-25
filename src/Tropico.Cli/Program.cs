@@ -65,3 +65,6 @@ foreach (var name in save.NameTable.Names.Take(10))
 {
     Console.WriteLine($"- {name}");
 }
+
+Console.WriteLine($"Objects: {save.ObjectTable.Objects.Count}");
+Console.WriteLine($"Blob base: 0x{save.ObjectTable.BlobBaseOffset:X}");
