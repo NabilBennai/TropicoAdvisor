@@ -12,10 +12,10 @@ public sealed record BarRow(string Label, string Value, double Fraction);
 
 public sealed class PopulationViewModel
 {
-    private static readonly Color Blue = Color.Parse("#3B82F6");
-    private static readonly Color Orange = Color.Parse("#F59E0B");
-    private static readonly Color Red = Color.Parse("#E5484D");
-    private static readonly Color Green = Color.Parse("#22A06B");
+    private static readonly Color Blue = Color.Parse("#29C4C4");
+    private static readonly Color Orange = Color.Parse("#F2B84B");
+    private static readonly Color Red = Color.Parse("#E4572E");
+    private static readonly Color Green = Color.Parse("#3DB37A");
 
     public PopulationViewModel(IslandSnapshot snapshot, IReadOnlyList<Finding> findings)
     {

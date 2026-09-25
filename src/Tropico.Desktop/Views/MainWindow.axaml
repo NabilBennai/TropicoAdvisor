@@ -17,51 +17,6 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Window.Styles>
-        <Style Selector="Border.card">
-            <Setter Property="Padding" Value="12" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
-        </Style>
-        <Style Selector="Border.finding">
-            <Setter Property="BorderThickness" Value="4,0,0,0" />
-            <Setter Property="BorderBrush" Value="Gray" />
-        </Style>
-        <Style Selector="Border.finding.warning">
-            <Setter Property="BorderBrush" Value="Orange" />
-        </Style>
-        <Style Selector="Border.finding.critical">
-            <Setter Property="BorderBrush" Value="Crimson" />
-        </Style>
-        <Style Selector="Border.finding.uncertain TextBlock.message">
-            <Setter Property="Opacity" Value="0.75" />
-        </Style>
-        <Style Selector="TextBlock.caption">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Opacity" Value="0.65" />
-        </Style>
-        <Style Selector="TextBlock.value">
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-        <Style Selector="TextBlock.section">
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Margin" Value="0,8,0,0" />
-        </Style>
-        <Style Selector="TextBlock.num">
-            <Setter Property="TextAlignment" Value="Right" />
-        </Style>
-        <Style Selector="TextBlock.negative">
-            <Setter Property="Foreground" Value="#E5484D" />
-        </Style>
-        <Style Selector="TextBlock.head">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Opacity" Value="0.65" />
-        </Style>
-    </Window.Styles>
-
     <Window.DataTemplates>
 
         <DataTemplate DataType="vm:FindingViewModel">
@@ -193,23 +148,36 @@
 
     <DockPanel Margin="16">
 
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-            <Button DockPanel.Dock="Right" Content="Refresh" Margin="8,0,0,0"
-                    Command="{Binding RefreshCommand}" />
-            <ComboBox ItemsSource="{Binding Saves}"
-                      SelectedItem="{Binding SelectedSave}"
-                      HorizontalAlignment="Stretch"
-                      PlaceholderText="Select a Tropico 6 save">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="services:SaveFileItem">
-                        <TextBlock Text="{Binding DisplayName}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-        </DockPanel>
+        <!-- ============ Header ============ -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource TropicoHeaderBrush}" CornerRadius="12" Padding="18,14"
+                BorderBrush="{StaticResource TropicoCardBorderBrush}" BorderThickness="1"
+                BoxShadow="0 8 22 0 #66000000">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <Border Width="46" Height="46" CornerRadius="23" Margin="0,0,16,0"
+                        Background="{StaticResource TropicoSunBrush}" BoxShadow="0 0 24 4 #88F2B84B" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Classes="brand" Text="TROPICO ADVISOR" />
+                    <TextBlock Classes="caption" Text="The Almanac and the advisor of your island" />
+                </StackPanel>
+                <ComboBox Grid.Column="2" Width="360" Margin="0,0,10,0" VerticalAlignment="Center"
+                          ItemsSource="{Binding Saves}"
+                          SelectedItem="{Binding SelectedSave}"
+                          PlaceholderText="Select a Tropico 6 save">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="services:SaveFileItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="3" Content="Refresh" VerticalAlignment="Center"
+                        Command="{Binding RefreshCommand}" />
+            </Grid>
+        </Border>
+        <Border DockPanel.Dock="Top" Height="4" CornerRadius="2" Margin="0,10,0,12"
+                Background="{StaticResource TropicoStripeBrush}" />
 
         <TextBlock DockPanel.Dock="Top" Text="Analysing save..." IsVisible="{Binding IsBusy}" Margin="0,0,0,8" />
-        <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage}" Foreground="Crimson"
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage}" Foreground="{StaticResource TropicoNegativeBrush}"
                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                    TextWrapping="Wrap" Margin="0,0,0,8" />
         <TextBlock DockPanel.Dock="Top" Text="{Binding StatusMessage}"
@@ -227,7 +195,7 @@
                             <ScrollViewer>
                                 <StackPanel Spacing="12" Margin="0,8,12,8">
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" />
+                                        <TextBlock Classes="title" Text="{Binding Title}" />
                                         <TextBlock Classes="caption" Text="{Binding GameBuild}" />
                                     </StackPanel>
 

@@ -1,0 +1,179 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Tropico theme: one fixed look (no light / dark switching).
+        Tropical night: deep lagoon teal, sand cream text, gold / coral / palm accents.
+    -->
+
+    <Styles.Resources>
+        <Color x:Key="TropicoLagoonDeep">#0A2A2E</Color>
+        <Color x:Key="TropicoLagoon">#124046</Color>
+        <Color x:Key="TropicoGold">#F2B84B</Color>
+        <Color x:Key="TropicoCoral">#E4572E</Color>
+        <Color x:Key="TropicoPalm">#3DB37A</Color>
+        <Color x:Key="TropicoTurquoise">#29C4C4</Color>
+        <Color x:Key="TropicoCream">#F6EBD3</Color>
+
+        <SolidColorBrush x:Key="TropicoTextBrush" Color="#F6EBD3" />
+        <SolidColorBrush x:Key="TropicoCreamBrush" Color="#F6EBD3" />
+        <SolidColorBrush x:Key="TropicoMutedBrush" Color="#B9C7B4" />
+        <SolidColorBrush x:Key="TropicoGoldBrush" Color="#F2B84B" />
+        <SolidColorBrush x:Key="TropicoCoralBrush" Color="#E4572E" />
+        <SolidColorBrush x:Key="TropicoNegativeBrush" Color="#FF7A59" />
+        <SolidColorBrush x:Key="TropicoWarningBrush" Color="#F59E0B" />
+        <SolidColorBrush x:Key="TropicoInfoBrush" Color="#29C4C4" />
+        <SolidColorBrush x:Key="TropicoCardBrush" Color="#16FFFFFF" />
+        <SolidColorBrush x:Key="TropicoCardBorderBrush" Color="#33F2B84B" />
+        <SolidColorBrush x:Key="TropicoTrackBrush" Color="#26FFFFFF" />
+
+        <LinearGradientBrush x:Key="TropicoBackgroundBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#0A2A2E" Offset="0" />
+            <GradientStop Color="#0F3A40" Offset="0.55" />
+            <GradientStop Color="#124046" Offset="1" />
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="TropicoHeaderBrush" StartPoint="0%,0%" EndPoint="100%,0%">
+            <GradientStop Color="#1B5A5F" Offset="0" />
+            <GradientStop Color="#134A50" Offset="0.6" />
+            <GradientStop Color="#0F3A40" Offset="1" />
+        </LinearGradientBrush>
+
+        <RadialGradientBrush x:Key="TropicoSunBrush" Center="50%,50%" GradientOrigin="40%,35%" RadiusX="60%" RadiusY="60%">
+            <GradientStop Color="#FFE9A8" Offset="0" />
+            <GradientStop Color="#F2B84B" Offset="0.55" />
+            <GradientStop Color="#E4572E" Offset="1" />
+        </RadialGradientBrush>
+
+        <LinearGradientBrush x:Key="TropicoStripeBrush" StartPoint="0%,0%" EndPoint="100%,0%">
+            <GradientStop Color="#29C4C4" Offset="0" />
+            <GradientStop Color="#F2B84B" Offset="0.55" />
+            <GradientStop Color="#E4572E" Offset="1" />
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#0E3338" />
+        <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="#66F2B84B" />
+
+        <FontFamily x:Key="TropicoDisplayFont">Georgia, Palatino Linotype, Times New Roman, serif</FontFamily>
+    </Styles.Resources>
+
+    <!-- window -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{StaticResource TropicoBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoTextBrush}" />
+    </Style>
+
+    <!-- tabs: serif titles, gold when selected -->
+    <Style Selector="TabItem">
+        <Setter Property="FontFamily" Value="{StaticResource TropicoDisplayFont}" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoMutedBrush}" />
+    </Style>
+    <Style Selector="TabItem:pointerover">
+        <Setter Property="Foreground" Value="{StaticResource TropicoTextBrush}" />
+    </Style>
+    <Style Selector="TabItem:selected">
+        <Setter Property="Foreground" Value="{StaticResource TropicoGoldBrush}" />
+    </Style>
+    <Style Selector="TabItem:selected /template/ Rectangle#PART_SelectedPipe">
+        <Setter Property="Fill" Value="{StaticResource TropicoGoldBrush}" />
+    </Style>
+
+    <!-- cards -->
+    <Style Selector="Border.card">
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="{StaticResource TropicoCardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource TropicoCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- findings: colored left edge by severity -->
+    <Style Selector="Border.finding">
+        <Setter Property="BorderThickness" Value="5,1,1,1" />
+        <Setter Property="BorderBrush" Value="{StaticResource TropicoInfoBrush}" />
+    </Style>
+    <Style Selector="Border.finding.warning">
+        <Setter Property="BorderBrush" Value="{StaticResource TropicoWarningBrush}" />
+    </Style>
+    <Style Selector="Border.finding.critical">
+        <Setter Property="BorderBrush" Value="{StaticResource TropicoCoralBrush}" />
+    </Style>
+    <Style Selector="Border.finding.uncertain TextBlock.message">
+        <Setter Property="Opacity" Value="0.78" />
+    </Style>
+
+    <!-- text roles -->
+    <Style Selector="TextBlock.caption">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoMutedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.value">
+        <Setter Property="FontFamily" Value="{StaticResource TropicoDisplayFont}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoGoldBrush}" />
+    </Style>
+    <Style Selector="TextBlock.section">
+        <Setter Property="FontFamily" Value="{StaticResource TropicoDisplayFont}" />
+        <Setter Property="FontSize" Value="19" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="0,12,0,2" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoCreamBrush}" />
+    </Style>
+    <Style Selector="TextBlock.num">
+        <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+    <Style Selector="TextBlock.negative">
+        <Setter Property="Foreground" Value="{StaticResource TropicoNegativeBrush}" />
+    </Style>
+    <Style Selector="TextBlock.head">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoGoldBrush}" />
+    </Style>
+
+    <!-- title -->
+    <Style Selector="TextBlock.brand">
+        <Setter Property="FontFamily" Value="{StaticResource TropicoDisplayFont}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="LetterSpacing" Value="3" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoCreamBrush}" />
+    </Style>
+
+    <!-- bars -->
+    <Style Selector="ProgressBar">
+        <Setter Property="Foreground" Value="{StaticResource TropicoInfoBrush}" />
+        <Setter Property="Background" Value="{StaticResource TropicoTrackBrush}" />
+    </Style>
+
+    <!-- save picker -->
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="#0C2F34" />
+        <Setter Property="BorderBrush" Value="#66F2B84B" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoTextBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+    <Style Selector="TextBlock.title">
+        <Setter Property="FontFamily" Value="{StaticResource TropicoDisplayFont}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource TropicoCreamBrush}" />
+    </Style>
+
+    <!-- buttons -->
+    <Style Selector="Button">
+        <Setter Property="Background" Value="{StaticResource TropicoGoldBrush}" />
+        <Setter Property="Foreground" Value="#1B1206" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,8" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#FFD27A" />
+        <Setter Property="TextElement.Foreground" Value="#1B1206" />
+    </Style>
+
+</Styles>

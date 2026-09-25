@@ -15,9 +15,9 @@ public sealed class EconomyViewModel
 {
     private const int MaxCostRows = 12;
 
-    private static readonly Color Blue = Color.Parse("#3B82F6");
-    private static readonly Color Green = Color.Parse("#22A06B");
-    private static readonly Color Red = Color.Parse("#E5484D");
+    private static readonly Color Blue = Color.Parse("#F2B84B");
+    private static readonly Color Green = Color.Parse("#3DB37A");
+    private static readonly Color Red = Color.Parse("#E4572E");
 
     public EconomyViewModel(IslandSnapshot snapshot, IReadOnlyList<Finding> findings)
     {

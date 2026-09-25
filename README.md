@@ -17,6 +17,9 @@ recent one and has six tabs:
 | Trade | Price, stock, exports and imports per resource, trade routes |
 | Politics | Faction standing with its causes (edicts, buildings, demands), active edicts, constitution, elections, demands |
 
+The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
+light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
+
 ### Suggestions and confidence
 
 Every suggestion (`Finding`) has a category, a severity (`Info`, `Warning`, `Critical`), the evidence it relies on, a general lead and a

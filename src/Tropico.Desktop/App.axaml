@@ -2,14 +2,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Tropico.Desktop.App"
              xmlns:local="using:Tropico.Desktop"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
+             <!-- One fixed look: the Tropico theme is always dark-toned and does not follow the system light / dark setting. -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark"
+                                       Accent="#F2B84B"
+                                       RegionColor="#0E3338"
+                                       BaseHigh="#F6EBD3"
+                                       AltHigh="#0A2A2E" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <StyleInclude Source="avares://Tropico.Desktop/Themes/TropicoTheme.axaml" />
     </Application.Styles>
 </Application>
