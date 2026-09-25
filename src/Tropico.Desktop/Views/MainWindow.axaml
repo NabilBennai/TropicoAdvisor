@@ -81,6 +81,14 @@
             </Border>
         </DataTemplate>
 
+        <DataTemplate DataType="vm:BarRow">
+            <Grid ColumnDefinitions="220,*,120" Margin="0,2">
+                <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Fraction}" Height="10" Margin="8,0" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding Value}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="vm:BreakdownRow">
             <Grid ColumnDefinitions="*,110,60" Margin="0,2">
                 <TextBlock Text="{Binding Name}" />
@@ -182,6 +190,73 @@
 
                                     <TextBlock Classes="section" Text="Most common buildings" />
                                     <ItemsControl ItemsSource="{Binding TopBuildings}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- ============ Population ============ -->
+                        <TabItem Header="Population">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8" DataContext="{Binding Population}" x:DataType="vm:PopulationViewModel">
+
+                                    <UniformGrid Columns="4">
+                                        <Border Classes="card" Margin="0,0,6,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Citizens" />
+                                                <TextBlock Classes="value" Text="{Binding Citizens}" />
+                                                <TextBlock Classes="caption" Text="{Binding AgeSummary}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Unemployed" />
+                                                <TextBlock Classes="value" Text="{Binding Unemployed}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Homeless families" />
+                                                <TextBlock Classes="value" Text="{Binding HomelessFamilies}" />
+                                                <TextBlock Classes="caption" Text="{Binding HomelessCitizens}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="6,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Happiness" />
+                                                <TextBlock Classes="value" Text="{Binding Happiness}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <TextBlock Classes="section" Text="Suggestions" IsVisible="{Binding HasFindings}" />
+                                    <ItemsControl ItemsSource="{Binding Findings}" />
+
+                                    <TextBlock Classes="section" Text="Population" />
+                                    <c:LineChart Height="180" Series="{Binding PopulationSeries}" LeftLabel="{Binding Left}" RightLabel="{Binding Right}" />
+
+                                    <TextBlock Classes="section" Text="Jobs and housing" />
+                                    <c:LineChart Height="180" Series="{Binding JobsHousingSeries}" LeftLabel="{Binding Left}" RightLabel="{Binding Right}" />
+
+                                    <TextBlock Classes="section" Text="Overall happiness" />
+                                    <c:LineChart Height="180" Series="{Binding HappinessSeries}" LeftLabel="{Binding Left}" RightLabel="{Binding Right}" />
+
+                                    <TextBlock Classes="section" Text="Happiness by category (0-100, weakest first)" />
+                                    <ItemsControl ItemsSource="{Binding HappinessCategories}" />
+
+                                    <UniformGrid Columns="2">
+                                        <StackPanel Margin="0,0,12,0">
+                                            <TextBlock Classes="section" Text="Education" />
+                                            <ItemsControl ItemsSource="{Binding Education}" />
+                                            <TextBlock Classes="section" Text="Age groups" />
+                                            <ItemsControl ItemsSource="{Binding AgeGroups}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="12,0,0,0">
+                                            <TextBlock Classes="section" Text="Wealth classes (lowest first, assumed)" />
+                                            <ItemsControl ItemsSource="{Binding Wealth}" />
+                                            <TextBlock Classes="section" Text="Housing by tier (cheapest first, assumed)" />
+                                            <ItemsControl ItemsSource="{Binding Homes}" />
+                                        </StackPanel>
+                                    </UniformGrid>
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>

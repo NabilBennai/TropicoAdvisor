@@ -43,7 +43,10 @@ public sealed class IslandReportViewModel
         Findings = report.Findings.Select(f => new FindingViewModel(f)).ToList();
         Economy = new EconomyViewModel(snapshot, report.Findings);
         Trade = new TradeViewModel(snapshot, report.Findings);
+        Population = new PopulationViewModel(snapshot, report.Findings);
     }
+
+    public PopulationViewModel Population { get; }
 
     public EconomyViewModel Economy { get; }
     public TradeViewModel Trade { get; }

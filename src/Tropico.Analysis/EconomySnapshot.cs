@@ -57,13 +57,7 @@ public sealed record EconomySnapshot(
     public IReadOnlyList<TimePoint> ExpenseHistory { get; init; } = [];
 
     /// <summary>Calendar (year, month 1-12) of a history month index, derived from the current date; null without a calendar.</summary>
-    public (int Year, int Month)? DateOf(double monthIndex)
-    {
-        if (MonthIndex is not { } current || Year is not { } year || Month is not { } month) return null;
-
-        var total = year * 12 + (month - 1) - (current - (int)monthIndex);
-        return (Math.DivRem(total, 12).Quotient, Math.DivRem(total, 12).Remainder + 1);
-    }
+    public (int Year, int Month)? DateOf(double monthIndex) => GameCalendar.DateOf(MonthIndex, Year, Month, monthIndex);
 
     public static EconomySnapshot Empty { get; } = new(null, [], [], 0, 0, 0, 0, 0, 0, new Dictionary<string, long>());
 }

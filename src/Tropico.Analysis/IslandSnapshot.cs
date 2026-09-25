@@ -4,7 +4,13 @@ public sealed record TimePoint(double X, double Value);
 
 public sealed record BuildingSummary(int Total, IReadOnlyDictionary<string, int> ByClass, IReadOnlyDictionary<string, int> ByState);
 
-public sealed record PopulationSummary(int? Total, int? Children, int? Adults, int? Retired, int? Prisoners);
+public sealed record PopulationSummary(int? Total, int? Children, int? Adults, int? Retired, int? Prisoners)
+{
+    public int? Soldiers { get; init; }
+    public int? Voters { get; init; }
+    public int? NativeTropicans { get; init; }
+    public int? Immigrants { get; init; }
+}
 
 /// <summary>
 /// Parser-independent view of an island, the only input of the analysis rules.
@@ -25,4 +31,8 @@ public sealed record IslandSnapshot(
     EconomySnapshot? EconomyData = null)
 {
     public EconomySnapshot Economy => EconomyData ?? EconomySnapshot.Empty;
+
+    public PopulationDetails? PopulationData { get; init; }
+
+    public PopulationDetails PopulationInfo => PopulationData ?? PopulationDetails.Empty;
 }

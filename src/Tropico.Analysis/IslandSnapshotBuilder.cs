@@ -19,7 +19,13 @@ public static class IslandSnapshotBuilder
                 buildings.Count,
                 buildings.GroupBy(b => b.ClassName).ToDictionary(g => g.Key, g => g.Count()),
                 buildings.GroupBy(b => StateName(b.BuildingState)).ToDictionary(g => g.Key, g => g.Count())),
-            new PopulationSummary(population.Total, population.Children, population.Adults, population.Retired, population.Prisoners),
+            new PopulationSummary(population.Total, population.Children, population.Adults, population.Retired, population.Prisoners)
+            {
+                Soldiers = population.Soldiers,
+                Voters = population.Voters,
+                NativeTropicans = population.NativeTropicans,
+                Immigrants = population.Immigrants,
+            },
             stats.Treasury,
             stats.SwissBank,
             stats.Histories.TryGetValue("TreasuryHistory", out var treasury)
@@ -28,8 +34,63 @@ public static class IslandSnapshotBuilder
             stats.MonthBalance,
             stats.LastSample("UnemployedHistory")?.Y ?? [],
             stats.LastSample("HomelessFamiliesByWealthHistory")?.Y ?? [],
-            BuildEconomy(save, stats, buildings));
+            BuildEconomy(save, stats, buildings))
+        {
+            PopulationData = BuildPopulation(save, stats),
+        };
     }
+
+    private static readonly string[] HappinessCategories = ["Food", "Health", "Job", "House", "Faith", "Fun", "Liberty", "Safety"];
+    private static readonly string[] HappinessLevelNames = ["Low", "Medium", "High"];
+    private const string LookingForHome = "ET6Thought::GoingToFindHome";
+
+    private static PopulationDetails BuildPopulation(T6SaveFile save, T6IslandStatistics stats)
+    {
+        // Each happiness category history stores its value at the slot of its own category (verified: the only non-zero slot).
+        var happiness = new Dictionary<string, double>();
+        for (var i = 0; i < HappinessCategories.Length; i++)
+        {
+            if (stats.LastSample(HappinessCategories[i] + "HappinessHistory") is { } sample && i < sample.Y.Count) happiness[HappinessCategories[i]] = sample.Y[i];
+        }
+
+        // Level counts: slot 0 is unused (0 in every sample), then low, medium, high (low/medium verified against agents).
+        var levels = Pad(stats.LastSample("AverageHappinessLevelHistory")?.Y, 4);
+        var census = T6AgentCensusReader.Read(save);
+        var calendar = T6TradeEconomyReader.Read(save).Calendar;
+
+        return new PopulationDetails(
+            Pad(stats.LastSample("AgentEducationDistributionHistory")?.Y, 3),
+            Pad(stats.LastSample("AgentAgeDistributionHistory")?.Y, 3),
+            Pad(stats.LastSample("AgentWealthDistributionHistory")?.Y, 5),
+            Pad(stats.LastSample("UnemployedHistory")?.Y, 3),
+            Pad(stats.LastSample("HomelessFamiliesByWealthHistory")?.Y, 3),
+            Pad(stats.LastSample("VacantHomesByWealthNumberHistory")?.Y, 3),
+            stats.LastSample("OpenJobsHistory")?.Y.FirstOrDefault(),
+            stats.LastSample("OverallHappinessHistory")?.Y.FirstOrDefault(),
+            happiness,
+            HappinessLevelNames.Select((n, i) => (n, levels[i + 1])).ToDictionary(x => x.n, x => x.Item2),
+            stats.LastSample("AgentAverageAgeHistory")?.Y.FirstOrDefault(),
+            census.ThoughtCounts.TryGetValue(LookingForHome, out var looking) ? looking : 0)
+        {
+            MonthIndex = calendar?.MonthIndex,
+            Year = calendar?.Year,
+            Month = calendar?.Month,
+            PopulationHistory = Series(stats, "AgentPopulationHistory"),
+            UnemployedHistory = Series(stats, "UnemployedHistory", sum: true),
+            HomelessFamiliesHistory = Series(stats, "HomelessFamiliesByWealthHistory", sum: true),
+            VacantHomesHistory = Series(stats, "VacantHomesByWealthNumberHistory", sum: true),
+            HappinessHistory = Series(stats, "OverallHappinessHistory"),
+        };
+    }
+
+    // History arrays omit trailing zeros: pad to the fixed number of slots.
+    private static List<double> Pad(IReadOnlyList<double>? values, int length) =>
+        Enumerable.Range(0, length).Select(i => values is not null && i < values.Count ? values[i] : 0.0).ToList();
+
+    private static List<TimePoint> Series(T6IslandStatistics stats, string name, bool sum = false) =>
+        stats.Histories.TryGetValue(name, out var samples)
+            ? samples.Select(s => new TimePoint(s.X, sum ? s.Y.Sum() : s.Y.FirstOrDefault())).ToList()
+            : [];
 
     private static EconomySnapshot BuildEconomy(T6SaveFile save, T6IslandStatistics stats, IReadOnlyList<T6Building> buildings)
     {
