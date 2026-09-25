@@ -52,6 +52,9 @@
         <Style Selector="TextBlock.num">
             <Setter Property="TextAlignment" Value="Right" />
         </Style>
+        <Style Selector="TextBlock.negative">
+            <Setter Property="Foreground" Value="#E5484D" />
+        </Style>
         <Style Selector="TextBlock.head">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -121,6 +124,36 @@
                 <TextBlock Grid.Column="2" Classes="num" Text="{Binding InUse}" />
                 <TextBlock Grid.Column="3" Classes="num" Text="{Binding Producers}" />
                 <TextBlock Grid.Column="4" Classes="num" Text="{Binding Amount}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:FactionRow">
+            <Grid ColumnDefinitions="150,80,150,*" Margin="0,2">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Grid.Column="1" Classes="num" Classes.negative="{Binding IsNegative}" Text="{Binding Standing}" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding History}" />
+                <TextBlock Grid.Column="3" Margin="16,0,0,0" Text="{Binding Causes}" TextWrapping="Wrap" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:EdictRow">
+            <Grid ColumnDefinitions="*,120" Margin="0,2">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Active}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:ConstitutionRow">
+            <Grid ColumnDefinitions="*,*" Margin="0,2">
+                <TextBlock Text="{Binding Topic}" />
+                <TextBlock Grid.Column="1" Text="{Binding Option}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:DemandRow">
+            <Grid ColumnDefinitions="*,120" Margin="0,2">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Status}" />
             </Grid>
         </DataTemplate>
 
@@ -369,6 +402,77 @@
                                             <ItemsControl ItemsSource="{Binding Wealth}" />
                                             <TextBlock Classes="section" Text="Housing by tier (cheapest first, assumed)" />
                                             <ItemsControl ItemsSource="{Binding Homes}" />
+                                        </StackPanel>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- ============ Politics ============ -->
+                        <TabItem Header="Politics">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8" DataContext="{Binding PoliticsTab}" x:DataType="vm:PoliticsViewModel">
+
+                                    <UniformGrid Columns="5">
+                                        <Border Classes="card" Margin="0,0,6,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Era" />
+                                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Era}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Constitution signed" />
+                                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Constitution}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Next elections" />
+                                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Elections}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Research points" />
+                                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Research}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="6,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Victory points" />
+                                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding VictoryPoints}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <TextBlock Classes="section" Text="Suggestions" IsVisible="{Binding HasFindings}" />
+                                    <ItemsControl ItemsSource="{Binding Findings}" />
+
+                                    <TextBlock Classes="section" Text="Factions" />
+                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                               Text="Standing is the sum of the modifiers stored in the save. Leader and corruption effects are not stored, and the absolute scale is unverified: compare factions with each other and look at the sign. History is the net of past positive and negative events." />
+                                    <Grid ColumnDefinitions="150,80,150,*">
+                                        <TextBlock Classes="head" Text="Faction" />
+                                        <TextBlock Grid.Column="1" Classes="head num" Text="Standing" />
+                                        <TextBlock Grid.Column="2" Classes="head num" Text="History" />
+                                        <TextBlock Grid.Column="3" Classes="head" Margin="16,0,0,0" Text="Main causes" />
+                                    </Grid>
+                                    <ItemsControl ItemsSource="{Binding Factions}" />
+
+                                    <UniformGrid Columns="2">
+                                        <StackPanel Margin="0,0,12,0">
+                                            <TextBlock Classes="section" Text="Active edicts" />
+                                            <ItemsControl ItemsSource="{Binding Edicts}" />
+                                            <TextBlock Classes="section" Text="Landmarks built" />
+                                            <TextBlock Text="{Binding Landmarks}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <StackPanel Margin="12,0,0,0">
+                                            <TextBlock Classes="section" Text="Constitution" />
+                                            <TextBlock Classes="caption" TextWrapping="Wrap" Text="Only topics with a non-default choice are stored." />
+                                            <ItemsControl ItemsSource="{Binding ConstitutionChoices}" />
+                                            <TextBlock Classes="section" Text="Demands" />
+                                            <ItemsControl ItemsSource="{Binding Demands}" />
                                         </StackPanel>
                                     </UniformGrid>
                                 </StackPanel>

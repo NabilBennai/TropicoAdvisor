@@ -39,4 +39,8 @@ public sealed record IslandSnapshot(
     public ProductionSnapshot? ProductionData { get; init; }
 
     public ProductionSnapshot Production => ProductionData ?? ProductionSnapshot.Empty;
+
+    public PoliticsSnapshot? PoliticsData { get; init; }
+
+    public PoliticsSnapshot Politics => PoliticsData ?? PoliticsSnapshot.Empty;
 }

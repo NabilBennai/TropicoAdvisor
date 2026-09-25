@@ -33,6 +33,9 @@ public sealed class IslandAnalyzer(IEnumerable<IAnalysisRule> rules)
         new FullOutputRule(),
         new UntappedDepositsRule(),
         new BudgetLevelRule(),
+        new FactionStandingRule(),
+        new EdictTradeOffRule(),
+        new ElectionsRule(),
     ];
 
     public IslandReport Analyze(IslandSnapshot snapshot) => new(

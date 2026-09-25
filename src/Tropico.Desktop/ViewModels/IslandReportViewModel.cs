@@ -45,7 +45,10 @@ public sealed class IslandReportViewModel
         Trade = new TradeViewModel(snapshot, report.Findings);
         Population = new PopulationViewModel(snapshot, report.Findings);
         BuildingsTab = new BuildingsViewModel(snapshot, report.Findings);
+        PoliticsTab = new PoliticsViewModel(snapshot, report.Findings);
     }
+
+    public PoliticsViewModel PoliticsTab { get; }
 
     public BuildingsViewModel BuildingsTab { get; }
 
