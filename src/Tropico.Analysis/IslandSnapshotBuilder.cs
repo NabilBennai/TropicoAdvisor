@@ -10,6 +10,7 @@ public static class IslandSnapshotBuilder
     {
         var buildings = T6BuildingReader.Read(save);
         var stats = T6IslandStatisticsReader.Read(save);
+        var trade = T6TradeEconomyReader.Read(save);
         var population = stats.Population;
 
         return new IslandSnapshot(
@@ -34,9 +35,10 @@ public static class IslandSnapshotBuilder
             stats.MonthBalance,
             stats.LastSample("UnemployedHistory")?.Y ?? [],
             stats.LastSample("HomelessFamiliesByWealthHistory")?.Y ?? [],
-            BuildEconomy(save, stats, buildings))
+            BuildEconomy(trade, stats, buildings))
         {
-            PopulationData = BuildPopulation(save, stats),
+            PopulationData = BuildPopulation(save, stats, trade.Calendar),
+            ProductionData = ProductionSnapshotBuilder.Build(buildings, T6DepositReader.Read(save), trade),
         };
     }
 
@@ -44,7 +46,7 @@ public static class IslandSnapshotBuilder
     private static readonly string[] HappinessLevelNames = ["Low", "Medium", "High"];
     private const string LookingForHome = "ET6Thought::GoingToFindHome";
 
-    private static PopulationDetails BuildPopulation(T6SaveFile save, T6IslandStatistics stats)
+    private static PopulationDetails BuildPopulation(T6SaveFile save, T6IslandStatistics stats, T6Calendar? calendar)
     {
         // Each happiness category history stores its value at the slot of its own category (verified: the only non-zero slot).
         var happiness = new Dictionary<string, double>();
@@ -56,7 +58,6 @@ public static class IslandSnapshotBuilder
         // Level counts: slot 0 is unused (0 in every sample), then low, medium, high (low/medium verified against agents).
         var levels = Pad(stats.LastSample("AverageHappinessLevelHistory")?.Y, 4);
         var census = T6AgentCensusReader.Read(save);
-        var calendar = T6TradeEconomyReader.Read(save).Calendar;
 
         return new PopulationDetails(
             Pad(stats.LastSample("AgentEducationDistributionHistory")?.Y, 3),
@@ -92,9 +93,8 @@ public static class IslandSnapshotBuilder
             ? samples.Select(s => new TimePoint(s.X, sum ? s.Y.Sum() : s.Y.FirstOrDefault())).ToList()
             : [];
 
-    private static EconomySnapshot BuildEconomy(T6SaveFile save, T6IslandStatistics stats, IReadOnlyList<T6Building> buildings)
+    private static EconomySnapshot BuildEconomy(T6TradeEconomy trade, T6IslandStatistics stats, IReadOnlyList<T6Building> buildings)
     {
-        var trade = T6TradeEconomyReader.Read(save);
         var stockByResource = trade.Stocks.ToDictionary(s => s.Resource, s => s.Total);
         var instances = buildings.GroupBy(b => b.ClassName).ToDictionary(g => g.Key, g => g.Count());
         var finances = stats.YearlyFinances;

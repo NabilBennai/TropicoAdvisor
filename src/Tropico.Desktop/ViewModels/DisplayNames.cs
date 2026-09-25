@@ -18,6 +18,19 @@ public static class DisplayNames
         return Humanize(name.Replace('_', ' '));
     }
 
+    /// <summary>"BP_T6WorkmodeProfitProtocol_C" -> "Profit Protocol".</summary>
+    public static string Workmode(string name)
+    {
+        if (name == "-") return "-";
+        if (name.EndsWith("_C", System.StringComparison.Ordinal)) name = name[..^2];
+        foreach (var prefix in new[] { "BP_T6Workmode", "BP_Workmode", "BP_" })
+        {
+            if (name.StartsWith(prefix, System.StringComparison.Ordinal)) return Humanize(name[prefix.Length..].Replace('_', ' '));
+        }
+
+        return Humanize(name.Replace('_', ' '));
+    }
+
     /// <summary>"TouristFees" -> "Tourist Fees"; "ET6ResourceType::Gold" -> "Gold".</summary>
     public static string Category(string name)
     {

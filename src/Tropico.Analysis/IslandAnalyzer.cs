@@ -30,6 +30,9 @@ public sealed class IslandAnalyzer(IEnumerable<IAnalysisRule> rules)
         new ExportConcentrationRule(),
         new IdleStockRule(),
         new PriceOpportunityRule(),
+        new FullOutputRule(),
+        new UntappedDepositsRule(),
+        new BudgetLevelRule(),
     ];
 
     public IslandReport Analyze(IslandSnapshot snapshot) => new(

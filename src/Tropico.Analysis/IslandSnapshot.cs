@@ -35,4 +35,8 @@ public sealed record IslandSnapshot(
     public PopulationDetails? PopulationData { get; init; }
 
     public PopulationDetails PopulationInfo => PopulationData ?? PopulationDetails.Empty;
+
+    public ProductionSnapshot? ProductionData { get; init; }
+
+    public ProductionSnapshot Production => ProductionData ?? ProductionSnapshot.Empty;
 }
