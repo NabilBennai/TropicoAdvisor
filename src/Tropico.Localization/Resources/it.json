@@ -368,5 +368,18 @@
   "ui.filterWarnings": "Avvisi e critici",
   "ui.filterCritical": "Solo critici",
   "ui.hideUncertain": "Nascondi incerti",
-  "ui.shownOf": "{0} di {1} mostrati"
+  "ui.shownOf": "{0} di {1} mostrati",
+  "finding.tradeDeficit": "Le importazioni ({0:N0}) hanno superato i ricavi da esportazione ({1:N0}) lo scorso anno: un deficit commerciale di {2:N0}.",
+  "suggest.tradeDeficit": "Vendi di più di ciò che l'isola produce (guarda le scorte e le rotte di esportazione offerte), oppure produci localmente ciò che importi di più.",
+  "evidence.exportRevenue": "Ricavi da esportazione: {0:N0}",
+  "finding.priceLow": "{0} si vende {1:0} % sotto il prezzo medio e ce ne sono {2:N0} in magazzino mentre viene esportato.",
+  "suggest.priceLow": "Se la scorta non è urgente, tienila finché il prezzo non risale invece di venderla a poco (l'ordine dello storico dei prezzi è ipotizzato).",
+  "finding.importWhileStocked": "{0} è stato importato ({1:N0} negli ultimi 12 mesi) mentre ce ne sono già {2:N0} in magazzino.",
+  "suggest.importWhileStocked": "Verifica se le importazioni servono ancora: la sola scorta può coprire diversi mesi (una parte può trovarsi in un magazzino che non serve l'acquirente).",
+  "evidence.imported": "Importato negli ultimi 12 mesi: {0:N0}",
+  "finding.educationLow": "Il {0:0} % dei cittadini non ha istruzione ({1:N0} su {2:N0}).",
+  "suggest.educationLow": "Costruisci scuole e licei: i cittadini istruiti accedono a lavori migliori e servono agli edifici che richiedono istruzione.",
+  "evidence.educationLevel": "{0}: {1:N0}",
+  "finding.educatedJobless": "Circa {0:N0} dei {1:N0} disoccupati sembrano istruiti ({2:P0}).",
+  "suggest.educatedJobless": "Aggiungi luoghi di lavoro che richiedono istruzione; i cittadini istruiti non accettano lavori non qualificati e possono restare disoccupati (l'ordine di istruzione dei disoccupati è ipotizzato)."
 }

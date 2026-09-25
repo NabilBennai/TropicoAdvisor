@@ -368,5 +368,18 @@
   "ui.filterWarnings": "Advertencias y críticas",
   "ui.filterCritical": "Solo críticas",
   "ui.hideUncertain": "Ocultar inciertas",
-  "ui.shownOf": "{0} de {1} mostradas"
+  "ui.shownOf": "{0} de {1} mostradas",
+  "finding.tradeDeficit": "Las importaciones ({0:N0}) superaron los ingresos por exportación ({1:N0}) el año pasado: un déficit comercial de {2:N0}.",
+  "suggest.tradeDeficit": "Vende más de lo que produce la isla (mira los almacenes y las rutas de exportación ofrecidas), o produce localmente lo que más se importa.",
+  "evidence.exportRevenue": "Ingresos por exportación: {0:N0}",
+  "finding.priceLow": "{0} se vende {1:0} % por debajo de su precio medio y hay {2:N0} en almacén mientras se exporta.",
+  "suggest.priceLow": "Si el stock no es urgente, guárdalo hasta que el precio se recupere en lugar de venderlo barato (el orden del historial de precios es supuesto).",
+  "finding.importWhileStocked": "Se importó {0} ({1:N0} en los últimos 12 meses) mientras ya hay {2:N0} en almacén.",
+  "suggest.importWhileStocked": "Comprueba si las importaciones siguen siendo necesarias: el stock por sí solo puede cubrir varios meses (parte puede estar en un almacén que no sirve al comprador).",
+  "evidence.imported": "Importado en los últimos 12 meses: {0:N0}",
+  "finding.educationLow": "El {0:0} % de los ciudadanos no tiene educación ({1:N0} de {2:N0}).",
+  "suggest.educationLow": "Construye escuelas e institutos: los ciudadanos educados acceden a mejores empleos y los necesitan los edificios que exigen educación.",
+  "evidence.educationLevel": "{0}: {1:N0}",
+  "finding.educatedJobless": "Unos {0:N0} de los {1:N0} desempleados parecen tener educación ({2:P0}).",
+  "suggest.educatedJobless": "Añade lugares de trabajo que exijan educación; los ciudadanos educados no aceptan empleos sin cualificación y pueden seguir en paro (el orden de educación de los desempleados es supuesto)."
 }

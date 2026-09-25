@@ -368,5 +368,18 @@
   "ui.filterWarnings": "Warnings and critical",
   "ui.filterCritical": "Critical only",
   "ui.hideUncertain": "Hide uncertain",
-  "ui.shownOf": "{0} of {1} shown"
+  "ui.shownOf": "{0} of {1} shown",
+  "finding.tradeDeficit": "Imports ({0:N0}) exceeded export revenue ({1:N0}) last year: a trade deficit of {2:N0}.",
+  "suggest.tradeDeficit": "Sell more of what the island produces (see the stocked goods and the export routes offered), or produce locally what is imported most.",
+  "evidence.exportRevenue": "Export revenue: {0:N0}",
+  "finding.priceLow": "{0} sells {1:0} % below its average price and {2:N0} are in stock while it is being exported.",
+  "suggest.priceLow": "If the stock is not urgent, hold it until the price recovers instead of selling at a low price (the price history order is assumed).",
+  "finding.importWhileStocked": "{0} was imported ({1:N0} in the last 12 months) while {2:N0} are already in stock.",
+  "suggest.importWhileStocked": "Check whether the imports are still needed: the stock alone may cover several months (part of it may sit in a storage that does not serve the buyer).",
+  "evidence.imported": "Imported in the last 12 months: {0:N0}",
+  "finding.educationLow": "{0:0} % of citizens are uneducated ({1:N0} of {2:N0}).",
+  "suggest.educationLow": "Build schools and high schools: educated citizens qualify for better jobs and are needed by the buildings that require education.",
+  "evidence.educationLevel": "{0}: {1:N0}",
+  "finding.educatedJobless": "About {0:N0} of the {1:N0} unemployed appear to be educated ({2:P0}).",
+  "suggest.educatedJobless": "Add workplaces that require education; educated citizens will not take unskilled jobs and may stay jobless (the education order of the unemployed is assumed)."
 }

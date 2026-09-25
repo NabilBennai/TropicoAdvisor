@@ -368,5 +368,18 @@
   "ui.filterWarnings": "Avertissements et critiques",
   "ui.filterCritical": "Critiques seulement",
   "ui.hideUncertain": "Masquer les incertaines",
-  "ui.shownOf": "{0} sur {1} affichées"
+  "ui.shownOf": "{0} sur {1} affichées",
+  "finding.tradeDeficit": "Les importations ({0:N0}) ont dépassé les revenus d'exportation ({1:N0}) l'an dernier : un déficit commercial de {2:N0}.",
+  "suggest.tradeDeficit": "Vendez davantage de ce que l'île produit (voir les stocks et les routes d'exportation proposées), ou produisez localement ce qui est le plus importé.",
+  "evidence.exportRevenue": "Revenus d'exportation : {0:N0}",
+  "finding.priceLow": "{0} se vend {1:0} % sous son prix moyen et {2:N0} sont en stock alors qu'il est exporté.",
+  "suggest.priceLow": "Si le stock n'est pas urgent, gardez-le jusqu'à la remontée du prix plutôt que de vendre à bas prix (l'ordre de l'historique des prix est supposé).",
+  "finding.importWhileStocked": "{0} a été importé ({1:N0} sur les 12 derniers mois) alors que {2:N0} sont déjà en stock.",
+  "suggest.importWhileStocked": "Vérifiez que ces importations sont encore utiles : le stock seul peut couvrir plusieurs mois (une partie peut se trouver dans un entrepôt qui ne sert pas l'acheteur).",
+  "evidence.imported": "Importé sur les 12 derniers mois : {0:N0}",
+  "finding.educationLow": "{0:0} % des citoyens n'ont aucune éducation ({1:N0} sur {2:N0}).",
+  "suggest.educationLow": "Construisez des écoles et des lycées : les citoyens éduqués accèdent à de meilleurs emplois et sont requis par les bâtiments qui exigent de l'éducation.",
+  "evidence.educationLevel": "{0} : {1:N0}",
+  "finding.educatedJobless": "Environ {0:N0} des {1:N0} chômeurs semblent éduqués ({2:P0}).",
+  "suggest.educatedJobless": "Ajoutez des lieux de travail qui exigent de l'éducation ; les citoyens éduqués n'acceptent pas les emplois non qualifiés et peuvent rester au chômage (l'ordre d'éducation des chômeurs est supposé)."
 }
