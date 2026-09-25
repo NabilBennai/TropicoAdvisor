@@ -363,5 +363,10 @@
   "export.action": "الإجراء المقترح",
   "export.evidence": "الأدلة",
   "export.keyFigures": "الأرقام الرئيسية",
-  "export.noSuggestions": "لا توجد اقتراحات لهذه اللعبة المحفوظة."
+  "export.noSuggestions": "لا توجد اقتراحات لهذه اللعبة المحفوظة.",
+  "ui.filterAll": "كل الاقتراحات",
+  "ui.filterWarnings": "التحذيرات والحرجة",
+  "ui.filterCritical": "الحرجة فقط",
+  "ui.hideUncertain": "إخفاء غير المؤكدة",
+  "ui.shownOf": "عرض {0} من {1}"
 }

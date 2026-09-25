@@ -22,6 +22,8 @@ The app watches the save folder: when the game writes a save, the newest one is 
 
 The **Export report** button in the header saves the current analysis (key figures, suggestions with action and evidence) as a Markdown file in the selected language.
 
+The suggestions of the Overview tab can be filtered by severity (all, warnings and critical, critical only) and the ones based on unverified data can be hidden.
+
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
 light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
 

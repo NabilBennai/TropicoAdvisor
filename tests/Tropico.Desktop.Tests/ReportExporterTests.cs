@@ -50,3 +50,54 @@ public class ReportExporterTests
         Assert.DoesNotContain("Suggested action", french);
     }
 }
+
+public class OverviewFilterTests
+{
+    private static Finding F(string code, Severity severity, Confidence confidence) =>
+        new(code, severity, confidence, code) { Category = "Economy" };
+
+    private static Desktop.ViewModels.IslandReportViewModel Overview() => new(new IslandReport(
+        new IslandSnapshot("s", "t6", new BuildingSummary(1, new Dictionary<string, int>(), new Dictionary<string, int>()),
+            new PopulationSummary(10, 2, 8, 0, 0), 1, 0, [], [], [], []),
+        [F("info", Severity.Info, Confidence.Verified), F("warn", Severity.Warning, Confidence.Uncertain), F("crit", Severity.Critical, Confidence.Probable)]));
+
+    [Fact]
+    public void ByDefault_EverythingIsShown_WithACount()
+    {
+        var vm = Overview();
+
+        Assert.Equal(["info", "warn", "crit"], vm.Findings.Select(f => f.Message));
+        Assert.Equal("3 of 3 shown", vm.FilterSummary);
+        Assert.True(vm.HasAnyFindings);
+    }
+
+    [Theory]
+    [InlineData(1, new[] { "warn", "crit" })]
+    [InlineData(2, new[] { "crit" })]
+    public void TheSeverityFilter_KeepsTheSelectedLevelAndAbove(int filter, string[] expected)
+    {
+        var vm = Overview();
+
+        vm.SelectedFilter = filter;
+
+        Assert.Equal(expected, vm.Findings.Select(f => f.Message));
+    }
+
+    [Fact]
+    public void HidingUncertain_DropsFindingsOnUnverifiedData_AndTheEmptyStateFollows()
+    {
+        var vm = Overview();
+        vm.HideUncertain = true;
+        Assert.Equal(["info", "crit"], vm.Findings.Select(f => f.Message));
+
+        vm.SelectedFilter = 2;
+        vm.HideUncertain = false;
+        vm.SelectedFilter = 0;
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+        vm.SelectedFilter = 2;
+
+        Assert.Contains("HasFindings", changed);
+        Assert.Equal("1 of 3 shown", vm.FilterSummary);
+    }
+}

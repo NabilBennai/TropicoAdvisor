@@ -363,5 +363,10 @@
   "export.action": "Acción sugerida",
   "export.evidence": "Pruebas",
   "export.keyFigures": "Cifras clave",
-  "export.noSuggestions": "No hay sugerencias para esta partida."
+  "export.noSuggestions": "No hay sugerencias para esta partida.",
+  "ui.filterAll": "Todas las sugerencias",
+  "ui.filterWarnings": "Advertencias y críticas",
+  "ui.filterCritical": "Solo críticas",
+  "ui.hideUncertain": "Ocultar inciertas",
+  "ui.shownOf": "{0} de {1} mostradas"
 }

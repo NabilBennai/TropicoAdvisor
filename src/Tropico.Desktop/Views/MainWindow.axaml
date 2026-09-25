@@ -246,6 +246,11 @@
                                     </UniformGrid>
 
                                     <TextBlock Classes="section" Text="{loc:T ui.suggestions}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding HasAnyFindings}">
+                                        <ComboBox Width="260" ItemsSource="{Binding FilterOptions}" SelectedIndex="{Binding SelectedFilter}" />
+                                        <CheckBox Content="{loc:T ui.hideUncertain}" IsChecked="{Binding HideUncertain}" VerticalAlignment="Center" />
+                                        <TextBlock Classes="caption" Text="{Binding FilterSummary}" VerticalAlignment="Center" />
+                                    </StackPanel>
                                     <TextBlock Classes="caption" Text="{loc:T ui.noFindings}" IsVisible="{Binding !HasFindings}" />
                                     <ItemsControl ItemsSource="{Binding Findings}" />
 

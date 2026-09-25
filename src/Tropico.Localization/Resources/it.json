@@ -363,5 +363,10 @@
   "export.action": "Azione suggerita",
   "export.evidence": "Prove",
   "export.keyFigures": "Dati chiave",
-  "export.noSuggestions": "Nessun suggerimento per questo salvataggio."
+  "export.noSuggestions": "Nessun suggerimento per questo salvataggio.",
+  "ui.filterAll": "Tutti i suggerimenti",
+  "ui.filterWarnings": "Avvisi e critici",
+  "ui.filterCritical": "Solo critici",
+  "ui.hideUncertain": "Nascondi incerti",
+  "ui.shownOf": "{0} di {1} mostrati"
 }
