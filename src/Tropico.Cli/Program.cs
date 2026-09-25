@@ -32,3 +32,59 @@ foreach (var saveFile in saveFiles)
         $"- {info.Name} | {info.Length:N0} bytes | {info.LastWriteTime}"
     );
 }
+
+var gameSave = saveFiles
+    .Where(path => !Path.GetFileName(path)
+        .Equals("Trop6_Profile.t6sav", StringComparison.OrdinalIgnoreCase))
+    .OrderByDescending(File.GetLastWriteTime)
+    .FirstOrDefault();
+
+if (gameSave is null)
+{
+    Console.WriteLine("No game save found.");
+    return;
+}
+
+Console.WriteLine();
+Console.WriteLine($"Inspecting: {Path.GetFileName(gameSave)}");
+
+using var stream = File.OpenRead(gameSave);
+
+var header = new byte[Math.Min(64, stream.Length)];
+stream.ReadExactly(header);
+
+Console.WriteLine($"Size: {stream.Length:N0} bytes");
+Console.WriteLine("First 64 bytes:");
+Console.WriteLine(BitConverter.ToString(header).Replace("-", " "));
+
+Console.WriteLine();
+Console.WriteLine("ASCII strings:");
+
+stream.Position = 0;
+
+var data = new byte[stream.Length];
+stream.ReadExactly(data);
+
+var current = new List<char>();
+
+foreach (var b in data)
+{
+    if (b >= 32 && b <= 126)
+    {
+        current.Add((char)b);
+    }
+    else
+    {
+        if (current.Count >= 6)
+        {
+            Console.WriteLine(new string(current.ToArray()));
+        }
+
+        current.Clear();
+    }
+}
+
+if (current.Count >= 6)
+{
+    Console.WriteLine(new string(current.ToArray()));
+}
