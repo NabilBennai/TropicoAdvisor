@@ -2,13 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Tropico.Desktop.ViewModels"
         xmlns:services="using:Tropico.Desktop.Services"
+        xmlns:c="using:Tropico.Desktop.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="640"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="720"
         x:Class="Tropico.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Width="900" Height="640"
+        Width="1000" Height="760"
         Title="Tropico Advisor">
 
     <Design.DataContext>
@@ -43,7 +44,76 @@
             <Setter Property="FontSize" Value="24" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
+        <Style Selector="TextBlock.section">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+        <Style Selector="TextBlock.num">
+            <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+        <Style Selector="TextBlock.head">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.65" />
+        </Style>
     </Window.Styles>
+
+    <Window.DataTemplates>
+
+        <DataTemplate DataType="vm:FindingViewModel">
+            <Border Classes="card finding" Margin="0,0,0,8"
+                    Classes.warning="{Binding IsWarning}"
+                    Classes.critical="{Binding IsCritical}"
+                    Classes.uncertain="{Binding IsUncertain}">
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="message" Text="{Binding Message}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                    <ItemsControl ItemsSource="{Binding Evidence}" IsVisible="{Binding HasEvidence}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Classes="caption" Text="{Binding StringFormat='• {0}'}" TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{Binding Suggestion, StringFormat='→ {0}'}" IsVisible="{Binding HasSuggestion}" TextWrapping="Wrap" />
+                    <TextBlock Classes="caption" Text="{Binding Label}" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:BreakdownRow">
+            <Grid ColumnDefinitions="*,110,60" Margin="0,2">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Amount}" />
+                <TextBlock Grid.Column="2" Classes="num caption" Text="{Binding Share}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:CostCenterRow">
+            <Grid ColumnDefinitions="*,70,90,90,90,100" Margin="0,2">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Buildings}" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding Wages}" />
+                <TextBlock Grid.Column="3" Classes="num" Text="{Binding Upkeep}" />
+                <TextBlock Grid.Column="4" Classes="num" Text="{Binding Income}" />
+                <TextBlock Grid.Column="5" Classes="num" Text="{Binding PerBuilding}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:GoodRow">
+            <Grid ColumnDefinitions="*,70,70,90,90,80,80,70" Margin="0,2">
+                <TextBlock Text="{Binding Resource}" />
+                <TextBlock Grid.Column="1" Classes="num" Text="{Binding Price}" />
+                <TextBlock Grid.Column="2" Classes="num" Text="{Binding PriceChange}" />
+                <TextBlock Grid.Column="3" Classes="num" Text="{Binding Stock}" />
+                <TextBlock Grid.Column="4" Classes="num" Text="{Binding StockValue}" />
+                <TextBlock Grid.Column="5" Classes="num" Text="{Binding Exported}" />
+                <TextBlock Grid.Column="6" Classes="num" Text="{Binding Imported}" />
+                <TextBlock Grid.Column="7" Classes="num" Text="{Binding Routes}" />
+            </Grid>
+        </DataTemplate>
+
+    </Window.DataTemplates>
 
     <DockPanel Margin="16">
 
@@ -70,62 +140,151 @@
                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                    Margin="0,0,0,8" />
 
-        <ScrollViewer IsVisible="{Binding Report, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <ContentControl Content="{Binding Report}">
-                <ContentControl.ContentTemplate>
-                    <DataTemplate x:DataType="vm:IslandReportViewModel">
-                        <StackPanel Spacing="12">
+        <ContentControl Content="{Binding Report}"
+                        IsVisible="{Binding Report, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate x:DataType="vm:IslandReportViewModel">
+                    <TabControl>
 
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" />
-                                <TextBlock Classes="caption" Text="{Binding GameBuild}" />
-                            </StackPanel>
+                        <!-- ============ Overview ============ -->
+                        <TabItem Header="Overview">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" />
+                                        <TextBlock Classes="caption" Text="{Binding GameBuild}" />
+                                    </StackPanel>
 
-                            <UniformGrid Columns="3">
-                                <Border Classes="card" Margin="0,0,8,0">
-                                    <StackPanel>
-                                        <TextBlock Classes="caption" Text="Buildings" />
-                                        <TextBlock Classes="value" Text="{Binding Buildings}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Classes="card" Margin="4,0">
-                                    <StackPanel>
-                                        <TextBlock Classes="caption" Text="Citizens" />
-                                        <TextBlock Classes="value" Text="{Binding Citizens}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Classes="card" Margin="8,0,0,0">
-                                    <StackPanel>
-                                        <TextBlock Classes="caption" Text="Treasury" />
-                                        <TextBlock Classes="value" Text="{Binding Treasury}" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-
-                            <TextBlock Text="Findings" FontSize="16" FontWeight="SemiBold" />
-                            <TextBlock Classes="caption" Text="No findings." IsVisible="{Binding !HasFindings}" />
-                            <ItemsControl ItemsSource="{Binding Findings}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:FindingViewModel">
-                                        <Border Classes="card finding" Margin="0,0,0,8"
-                                                Classes.warning="{Binding IsWarning}"
-                                                Classes.critical="{Binding IsCritical}"
-                                                Classes.uncertain="{Binding IsUncertain}">
+                                    <UniformGrid Columns="3">
+                                        <Border Classes="card" Margin="0,0,8,0">
                                             <StackPanel>
-                                                <TextBlock Classes="message" Text="{Binding Message}" TextWrapping="Wrap" />
-                                                <TextBlock Classes="caption" Text="{Binding Label}" />
+                                                <TextBlock Classes="caption" Text="Buildings" />
+                                                <TextBlock Classes="value" Text="{Binding Buildings}" />
                                             </StackPanel>
                                         </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                        <Border Classes="card" Margin="4,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Citizens" />
+                                                <TextBlock Classes="value" Text="{Binding Citizens}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="8,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Treasury" />
+                                                <TextBlock Classes="value" Text="{Binding Treasury}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
 
-                            <TextBlock Text="Most common buildings" FontSize="16" FontWeight="SemiBold" />
-                            <ItemsControl ItemsSource="{Binding TopBuildings}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ContentControl.ContentTemplate>
-            </ContentControl>
-        </ScrollViewer>
+                                    <TextBlock Classes="section" Text="Suggestions" />
+                                    <TextBlock Classes="caption" Text="No findings." IsVisible="{Binding !HasFindings}" />
+                                    <ItemsControl ItemsSource="{Binding Findings}" />
+
+                                    <TextBlock Classes="section" Text="Most common buildings" />
+                                    <ItemsControl ItemsSource="{Binding TopBuildings}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- ============ Economy ============ -->
+                        <TabItem Header="Economy">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8" DataContext="{Binding Economy}" x:DataType="vm:EconomyViewModel">
+
+                                    <UniformGrid Columns="4">
+                                        <Border Classes="card" Margin="0,0,6,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Revenue (last year)" />
+                                                <TextBlock Classes="value" Text="{Binding YearlyRevenue}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Expenses (last year)" />
+                                                <TextBlock Classes="value" Text="{Binding YearlyExpenses}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="3,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Difference" />
+                                                <TextBlock Classes="value" Text="{Binding Balance}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="card" Margin="6,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Classes="caption" Text="Treasury covers" />
+                                                <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Runway}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <TextBlock Classes="section" Text="Treasury" />
+                                    <c:LineChart Height="200" Series="{Binding TreasurySeries}"
+                                                 LeftLabel="{Binding TreasuryLeft}" RightLabel="{Binding TreasuryRight}" />
+
+                                    <TextBlock Classes="section" Text="Monthly revenue and expenses" />
+                                    <c:LineChart Height="200" Series="{Binding FlowSeries}"
+                                                 LeftLabel="{Binding FlowLeft}" RightLabel="{Binding FlowRight}" />
+
+                                    <TextBlock Classes="section" Text="Suggestions" IsVisible="{Binding HasFindings}" />
+                                    <ItemsControl ItemsSource="{Binding Findings}" />
+
+                                    <UniformGrid Columns="2">
+                                        <StackPanel Margin="0,0,12,0">
+                                            <TextBlock Classes="section" Text="Revenue by category" />
+                                            <ItemsControl ItemsSource="{Binding RevenueBreakdown}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="12,0,0,0">
+                                            <TextBlock Classes="section" Text="Expenses by category" />
+                                            <ItemsControl ItemsSource="{Binding ExpenseBreakdown}" />
+                                        </StackPanel>
+                                    </UniformGrid>
+
+                                    <TextBlock Classes="section" Text="Costliest building classes (last year)" />
+                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                               Text="Income is only the direct income (visitor fees and rents). Producers earn through exports, so a low income is not a loss." />
+                                    <Grid ColumnDefinitions="*,70,90,90,90,100">
+                                        <TextBlock Classes="head" Text="Class" />
+                                        <TextBlock Grid.Column="1" Classes="head num" Text="Buildings" />
+                                        <TextBlock Grid.Column="2" Classes="head num" Text="Wages" />
+                                        <TextBlock Grid.Column="3" Classes="head num" Text="Upkeep" />
+                                        <TextBlock Grid.Column="4" Classes="head num" Text="Income" />
+                                        <TextBlock Grid.Column="5" Classes="head num" Text="Cost / building" />
+                                    </Grid>
+                                    <ItemsControl ItemsSource="{Binding CostCenters}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- ============ Trade ============ -->
+                        <TabItem Header="Trade">
+                            <ScrollViewer>
+                                <StackPanel Spacing="12" Margin="0,8,12,8" DataContext="{Binding Trade}" x:DataType="vm:TradeViewModel">
+
+                                    <TextBlock Classes="section" Text="Suggestions" IsVisible="{Binding HasFindings}" />
+                                    <ItemsControl ItemsSource="{Binding Findings}" />
+
+                                    <TextBlock Classes="section" Text="Resources" />
+                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                               Text="Stock is the total over every stock of the resource. Price change compares the last price sample with the earlier average (sample order unverified). Routes: exports offered / imports offered." />
+                                    <Grid ColumnDefinitions="*,70,70,90,90,80,80,70">
+                                        <TextBlock Classes="head" Text="Resource" />
+                                        <TextBlock Grid.Column="1" Classes="head num" Text="Price" />
+                                        <TextBlock Grid.Column="2" Classes="head num" Text="Change" />
+                                        <TextBlock Grid.Column="3" Classes="head num" Text="Stock" />
+                                        <TextBlock Grid.Column="4" Classes="head num" Text="Value" />
+                                        <TextBlock Grid.Column="5" Classes="head num" Text="Exported" />
+                                        <TextBlock Grid.Column="6" Classes="head num" Text="Imported" />
+                                        <TextBlock Grid.Column="7" Classes="head num" Text="Routes" />
+                                    </Grid>
+                                    <ItemsControl ItemsSource="{Binding Goods}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                    </TabControl>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
     </DockPanel>
 </Window>

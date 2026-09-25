@@ -181,4 +181,19 @@ public class EconomyRulesTests
         Assert.Null(Good("Gold", average: null).PriceRatio);
         Assert.Equal(0, Good("Gold", stock: 10, price: null).StockValue);
     }
+
+    [Fact]
+    public void DateOf_DerivesCalendarDatesFromTheCurrentMonthIndex()
+    {
+        var economy = EconomySnapshot.Empty with { MonthIndex = 417 };
+        Assert.Null(economy.DateOf(417)); // no calendar
+
+        var dated = new EconomySnapshot(417, [], [], 0, 0, 0, 0, 0, 0, new Dictionary<string, long>()) { Year = 1934, Month = 9 };
+
+        Assert.Equal((1934, 9), dated.DateOf(417));
+        Assert.Equal((1934, 8), dated.DateOf(416));
+        Assert.Equal((1934, 1), dated.DateOf(409));
+        Assert.Equal((1933, 12), dated.DateOf(408)); // crosses the year boundary
+        Assert.Equal((1929, 9), dated.DateOf(357));  // first sample of the 61-month history
+    }
 }

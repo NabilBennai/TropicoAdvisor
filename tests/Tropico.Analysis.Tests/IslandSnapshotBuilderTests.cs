@@ -78,4 +78,18 @@ public class IslandSnapshotBuilderTests
         Assert.Contains(findings, f => f.Code == "trade.idle-stock.Sugar");
         Assert.All(findings.Where(f => f.Category is "Economy" or "Trade"), f => Assert.NotEmpty(f.Message));
     }
+
+    [Fact]
+    public void Build_ReferenceSave_ExposesChartData()
+    {
+        var economy = IslandSnapshotBuilder.Build(T6SaveReader.Read(FindSample())).Economy;
+
+        Assert.Equal((1934, 9), (economy.Year!.Value, economy.Month!.Value));
+        Assert.Equal(61, economy.RevenueHistory.Count);
+        Assert.Equal(61, economy.ExpenseHistory.Count);
+        Assert.Equal((1929, 9), economy.DateOf(economy.RevenueHistory[0].X));
+        Assert.Equal(237_658, economy.RevenueByCategory["Exports"]);
+        Assert.Equal(111_432, economy.ExpensesByCategory["Wages"]);
+        Assert.Equal(48, economy.Goods.Single(g => g.Resource == "Gold").PriceHistory.Count);
+    }
 }

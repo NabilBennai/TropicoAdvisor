@@ -12,6 +12,9 @@ public sealed record GoodSnapshot(
     int ImportOffers,
     IReadOnlyList<string> ExportPartners)
 {
+    /// <summary>Monthly price samples (oldest to newest assumed, unverified).</summary>
+    public IReadOnlyList<double> PriceHistory { get; init; } = [];
+
     /// <summary>Approximate value of the stock at the current price.</summary>
     public double StockValue => StockTotal * (CurrentPrice ?? 0);
 
@@ -38,5 +41,29 @@ public sealed record EconomySnapshot(
     long ExportRevenue,
     IReadOnlyDictionary<string, long> ExportRevenueByResource)
 {
+    /// <summary>Current game date (from the calendar).</summary>
+    public int? Year { get; init; }
+
+    public int? Month { get; init; }
+
+    /// <summary>Last-year revenue and expenses by category (semantics partly unverified).</summary>
+    public IReadOnlyDictionary<string, long> RevenueByCategory { get; init; } = new Dictionary<string, long>();
+
+    public IReadOnlyDictionary<string, long> ExpensesByCategory { get; init; } = new Dictionary<string, long>();
+
+    /// <summary>Monthly revenue and expense history; X is the game month index.</summary>
+    public IReadOnlyList<TimePoint> RevenueHistory { get; init; } = [];
+
+    public IReadOnlyList<TimePoint> ExpenseHistory { get; init; } = [];
+
+    /// <summary>Calendar (year, month 1-12) of a history month index, derived from the current date; null without a calendar.</summary>
+    public (int Year, int Month)? DateOf(double monthIndex)
+    {
+        if (MonthIndex is not { } current || Year is not { } year || Month is not { } month) return null;
+
+        var total = year * 12 + (month - 1) - (current - (int)monthIndex);
+        return (Math.DivRem(total, 12).Quotient, Math.DivRem(total, 12).Remainder + 1);
+    }
+
     public static EconomySnapshot Empty { get; } = new(null, [], [], 0, 0, 0, 0, 0, 0, new Dictionary<string, long>());
 }

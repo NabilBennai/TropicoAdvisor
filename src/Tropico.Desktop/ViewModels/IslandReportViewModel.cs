@@ -14,6 +14,12 @@ public sealed class FindingViewModel(Finding finding)
 
     /// <summary>Findings on unverified data are shown dimmed.</summary>
     public bool IsUncertain => finding.Confidence == Confidence.Uncertain;
+
+    public string Category => finding.Category;
+    public string? Suggestion => finding.Suggestion;
+    public bool HasSuggestion => !string.IsNullOrEmpty(finding.Suggestion);
+    public IReadOnlyList<string> Evidence => finding.Evidence;
+    public bool HasEvidence => finding.Evidence.Count > 0;
 }
 
 public sealed class IslandReportViewModel
@@ -35,7 +41,12 @@ public sealed class IslandReportViewModel
             .Select(c => $"{c.Key}: {c.Value:N0}")
             .ToList();
         Findings = report.Findings.Select(f => new FindingViewModel(f)).ToList();
+        Economy = new EconomyViewModel(snapshot, report.Findings);
+        Trade = new TradeViewModel(snapshot, report.Findings);
     }
+
+    public EconomyViewModel Economy { get; }
+    public TradeViewModel Trade { get; }
 
     public string Title { get; }
     public string GameBuild { get; }

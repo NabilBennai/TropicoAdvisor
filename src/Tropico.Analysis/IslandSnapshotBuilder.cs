@@ -48,7 +48,10 @@ public static class IslandSnapshotBuilder
                 stockByResource.GetValueOrDefault(g.Resource),
                 g.ExportedLast12Months, g.ImportedLast12Months,
                 exports.Count, trade.RouteOffers.Count(o => o.Resource == g.Resource && o.IsImport),
-                exports.Select(o => o.Partner).Distinct().Order().ToList());
+                exports.Select(o => o.Partner).Distinct().Order().ToList())
+            {
+                PriceHistory = history,
+            };
         }).ToList();
 
         return new EconomySnapshot(
@@ -60,8 +63,21 @@ public static class IslandSnapshotBuilder
             finances.TotalRevenue, finances.TotalExpenses,
             finances.ExpensesByCategory.GetValueOrDefault("Wages"), finances.ExpensesByCategory.GetValueOrDefault("Upkeeps"),
             finances.ExpensesByCategory.GetValueOrDefault("Imports"), finances.RevenueByCategory.GetValueOrDefault("Exports"),
-            finances.ExportRevenueByResource);
+            finances.ExportRevenueByResource)
+        {
+            Year = trade.Calendar?.Year,
+            Month = trade.Calendar?.Month,
+            RevenueByCategory = finances.RevenueByCategory,
+            ExpensesByCategory = finances.ExpensesByCategory,
+            RevenueHistory = History(stats, "RevenueHistory"),
+            ExpenseHistory = History(stats, "ExpenseHistory"),
+        };
     }
+
+    private static List<TimePoint> History(T6IslandStatistics stats, string name) =>
+        stats.Histories.TryGetValue(name, out var samples)
+            ? samples.Where(s => s.Y.Count > 0).Select(s => new TimePoint(s.X, s.Y[0])).ToList()
+            : [];
 
     // "ET6BuildingState::Built" -> "Built"; null means no construction component was found.
     private static string StateName(string? state) =>
