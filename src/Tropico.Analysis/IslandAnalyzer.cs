@@ -20,6 +20,13 @@ public sealed class IslandAnalyzer(IEnumerable<IAnalysisRule> rules)
         new MonthlyBalanceRule(),
         new UnemploymentRule(),
         new HomelessFamiliesRule(),
+        new TreasuryRunwayRule(),
+        new WageBurdenRule(),
+        new CostCenterRule(),
+        new ImportDependenceRule(),
+        new ExportConcentrationRule(),
+        new IdleStockRule(),
+        new PriceOpportunityRule(),
     ];
 
     public IslandReport Analyze(IslandSnapshot snapshot) => new(

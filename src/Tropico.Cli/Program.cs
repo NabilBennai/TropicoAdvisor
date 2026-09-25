@@ -87,5 +87,7 @@ Console.WriteLine();
 Console.WriteLine("Findings:");
 foreach (var finding in new IslandAnalyzer().Analyze(save).Findings)
 {
-    Console.WriteLine($"- [{finding.Severity}/{finding.Confidence}] {finding.Message}");
+    Console.WriteLine($"- [{finding.Severity}/{finding.Confidence}] ({finding.Category}) {finding.Message}");
+    foreach (var line in finding.Evidence) Console.WriteLine($"    . {line}");
+    if (finding.Suggestion is not null) Console.WriteLine($"    -> {finding.Suggestion}");
 }

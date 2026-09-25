@@ -44,4 +44,38 @@ public class IslandSnapshotBuilderTests
         var unemployment = Assert.Single(report.Findings, f => f.Code == "population.unemployment");
         Assert.Equal(Confidence.Uncertain, unemployment.Confidence);
     }
+
+    [Fact]
+    public void Build_ReferenceSave_ExposesEconomyData()
+    {
+        var economy = IslandSnapshotBuilder.Build(T6SaveReader.Read(FindSample())).Economy;
+
+        Assert.Equal(417, economy.MonthIndex);
+        Assert.Equal(56, economy.Goods.Count);
+        Assert.Equal(165_044, economy.YearlyExpenses);
+        Assert.Equal(111_432, economy.Wages);
+        Assert.Equal(41_760, economy.Upkeep);
+
+        var coal = economy.Goods.Single(g => g.Resource == "Coal");
+        Assert.Equal(33_409, coal.StockTotal, 0);
+        Assert.NotNull(coal.CurrentPrice);
+        Assert.NotNull(coal.AveragePrice);
+
+        var mines = economy.ClassCosts.Single(c => c.ClassName == "BP_T6Mine_C");
+        Assert.Equal(35, mines.Instances);
+        Assert.Equal(27_300, mines.Cost);
+    }
+
+    [Fact]
+    public void Analyze_ReferenceSave_ProducesEconomicSuggestions()
+    {
+        var findings = new IslandAnalyzer().Analyze(T6SaveReader.Read(FindSample())).Findings;
+
+        Assert.Contains(findings, f => f.Code == "economy.runway-idle");
+        Assert.Contains(findings, f => f.Code == "economy.wage-burden");
+        var costCenters = Assert.Single(findings, f => f.Code == "economy.cost-centers");
+        Assert.StartsWith("Costliest building classes last year: BP_T6Mine_C", costCenters.Message);
+        Assert.Contains(findings, f => f.Code == "trade.idle-stock.Sugar");
+        Assert.All(findings.Where(f => f.Category is "Economy" or "Trade"), f => Assert.NotEmpty(f.Message));
+    }
 }

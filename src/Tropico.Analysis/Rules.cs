@@ -14,7 +14,11 @@ public sealed class BuildingConditionRule : IAnalysisRule
 
         var detail = string.Join(", ", problems.Select(p => $"{p.Value} {p.Key}"));
         yield return new Finding("buildings.condition", Severity.Warning, Confidence.Verified,
-            $"{problems.Sum(p => p.Value)} of {snapshot.Buildings.Total} buildings are not in good condition ({detail}).");
+            $"{problems.Sum(p => p.Value)} of {snapshot.Buildings.Total} buildings are not in good condition ({detail}).")
+        {
+            Category = "Buildings",
+            Suggestion = "Repair or rebuild them: damaged and broken buildings stop working, rubble frees the space.",
+        };
     }
 }
 
@@ -36,7 +40,10 @@ public sealed class TreasuryTrendRule : IAnalysisRule
 
         // sample spacing (game time) is unverified, hence Probable only
         yield return new Finding("treasury.trend", delta < 0 ? Severity.Warning : Severity.Info, Confidence.Probable,
-            string.Create(CultureInfo.InvariantCulture, $"Treasury {direction} by {Math.Abs(delta):N0} over the last {samples} samples (now {last.Value:N0})."));
+            string.Create(CultureInfo.InvariantCulture, $"Treasury {direction} by {Math.Abs(delta):N0} over the last {samples} samples (now {last.Value:N0})."))
+        {
+            Category = "Economy",
+        };
     }
 }
 
@@ -50,7 +57,10 @@ public sealed class MonthlyBalanceRule : IAnalysisRule
         if (negative == 0) yield break;
 
         yield return new Finding("balance.negative-months", negative * 2 >= months.Count ? Severity.Warning : Severity.Info, Confidence.Probable,
-            $"{negative} of the last {months.Count} monthly balances are negative.");
+            $"{negative} of the last {months.Count} monthly balances are negative.")
+        {
+            Category = "Economy",
+        };
     }
 }
 
@@ -70,7 +80,10 @@ public sealed class UnemploymentRule : IAnalysisRule
         yield return new Finding("population.unemployment",
             ratio >= WarningRatio ? Severity.Warning : Severity.Info, Confidence.Uncertain,
             string.Create(CultureInfo.InvariantCulture,
-                $"About {unemployed:N0} unemployed for {adults:N0} adults ({ratio:P0}); the unemployment series meaning is unverified."));
+                $"About {unemployed:N0} unemployed for {adults:N0} adults ({ratio:P0}); the unemployment series meaning is unverified."))
+        {
+            Category = "Population",
+        };
     }
 }
 
@@ -83,6 +96,9 @@ public sealed class HomelessFamiliesRule : IAnalysisRule
         if (homeless <= 0) yield break;
 
         yield return new Finding("housing.homeless-families", Severity.Warning, Confidence.Uncertain,
-            string.Create(CultureInfo.InvariantCulture, $"About {homeless:N0} families appear to be homeless; the series layout is unverified."));
+            string.Create(CultureInfo.InvariantCulture, $"About {homeless:N0} families appear to be homeless; the series layout is unverified."))
+        {
+            Category = "Housing",
+        };
     }
 }

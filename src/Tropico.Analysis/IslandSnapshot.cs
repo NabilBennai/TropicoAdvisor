@@ -21,4 +21,8 @@ public sealed record IslandSnapshot(
     IReadOnlyList<TimePoint> TreasuryHistory,
     IReadOnlyList<double> MonthlyBalance,
     IReadOnlyList<double> UnemployedLastSample,
-    IReadOnlyList<double> HomelessFamiliesLastSample);
+    IReadOnlyList<double> HomelessFamiliesLastSample,
+    EconomySnapshot? EconomyData = null)
+{
+    public EconomySnapshot Economy => EconomyData ?? EconomySnapshot.Empty;
+}
