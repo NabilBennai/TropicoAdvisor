@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tropico 6 .t6sav decoder (reverse-engineered, see reverse_engineering_report.md).
+"""Tropico 6 .t6sav decoder (reverse-engineered, see docs/reverse_engineering_report.md).
 
 Container:    [Lama header ~212-219 B][zlib stream to EOF]
 Decompressed: [u32 N][N x (i32 len, cstr)]   name table
