@@ -126,6 +126,8 @@ History series are `T6HistoricalData` structs: `Entries[{ValueX, ValuesY[]}]`.
 | Homeless families / vacant homes by 3 housing tiers | [U] | tier meaning assumed (cheapest first) |
 | 5 wealth classes | [U] | sum equals the population; order assumed lowest first |
 | Open jobs, workers history | [U] | names only |
+| Education distribution (uneducated, high school, college) | [V] | matches the agent data; used by the low-education suggestion |
+| Unemployed by education | [U] | same order assumed; the educated-unemployed suggestion is shown as uncertain |
 
 ### Economy
 
@@ -181,7 +183,8 @@ History series are `T6HistoricalData` structs: `Entries[{ValueX, ValuesY[]}]`.
 * Two saves, one game build (`1290`). Other builds may reorder record tails or add properties; every parser step fails with an offset
   in the message instead of guessing.
 * "Last sample of a history" can lag the live game by one sampling step.
-* Thresholds used by the suggestions (unemployment 10 %, happiness 35 / 50, faction warning -10, treasury 3 / 24 months, wages 60 / 80 %)
+* Thresholds used by the suggestions (unemployment 10 %, happiness 35 / 50, faction warning -10, treasury 3 / 24 months, wages 60 / 80 %,
+  uneducated 60 / 80 %, trade deficit 1.5 x, price 15 % below average, stock 50 % of imports)
   are heuristics of this project, not game rules.
 
 ## 8. Next steps

@@ -16,13 +16,13 @@ var saveDirectory = Path.Combine(
 Console.WriteLine($"Save directory: {saveDirectory}");
 Console.WriteLine($"Exists: {Directory.Exists(saveDirectory)}");
 
-if (!Directory.Exists(saveDirectory))
+if (args.Length == 0 && !Directory.Exists(saveDirectory))
 {
     Console.WriteLine("Save directory not found.");
     return;
 }
 
-var saveFiles = Directory.GetFiles(saveDirectory, "*.t6sav");
+var saveFiles = Directory.Exists(saveDirectory) ? Directory.GetFiles(saveDirectory, "*.t6sav") : [];
 
 Console.WriteLine();
 Console.WriteLine($"Found {saveFiles.Length} save(s):");
@@ -36,15 +36,15 @@ foreach (var saveFile in saveFiles)
     );
 }
 
-var gameSave = saveFiles
+var gameSave = args.Length > 0 ? args[0] : saveFiles
     .Where(path => !Path.GetFileName(path)
         .Equals("Trop6_Profile.t6sav", StringComparison.OrdinalIgnoreCase))
     .OrderByDescending(File.GetLastWriteTime)
     .FirstOrDefault();
 
-if (gameSave is null)
+if (gameSave is null || !File.Exists(gameSave))
 {
-    Console.WriteLine("No game save found.");
+    Console.WriteLine(gameSave is null ? "No game save found." : $"Save not found: {gameSave}");
     return;
 }
 

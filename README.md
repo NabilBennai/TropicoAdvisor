@@ -6,17 +6,17 @@ with suggestions about what is going wrong or could be improved, each with the f
 ## What it shows
 
 The desktop application lists the saves of `Documents\My Games\Tropico6\Saved\SaveGames` (the profile file is ignored), analyses the most
-recent one and has six tabs:
+recent one and has seven tabs:
 
 | Tab | Content |
 |---|---|
 | Overview | Buildings, citizens, treasury and all suggestions |
 | Buildings | Buildings by class (condition, workmode, budget level), production by resource (output storage, full producers), resource deposits |
 | Population | Citizens, unemployment, homeless families, happiness by category, education, age groups, housing by tier, history charts |
+| Politics | Faction standing with its causes (edicts, buildings, demands), active edicts, constitution, elections, demands |
 | Economy | Yearly revenue and expenses, treasury and monthly charts, revenue / expense breakdown, costliest building classes |
 | Trade | Price, stock, exports and imports per resource, trade routes |
 | Evolution | Comparison with the previous analysed save of the same island: treasury, buildings, population, factions, suggestions appeared / resolved |
-| Politics | Faction standing with its causes (edicts, buildings, demands), active edicts, constitution, elections, demands |
 
 The app watches the save folder: when the game writes a save, the newest one is analysed and shown automatically (and recorded in the history), without pressing Refresh.
 
@@ -26,6 +26,16 @@ The suggestions of the Overview tab can be filtered by severity (all, warnings a
 
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
 light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
+
+### Rules
+
+The suggestions come from independent rules in `Tropico.Analysis`, grouped by tab:
+
+* **Economy / Trade:** treasury trend and runway, negative months, wage burden, costliest building classes, import dependence, trade deficit,
+  export concentration, idle stock, price opportunity and price dip, imports while stocked.
+* **Population:** unemployment, homeless families, housing tier mismatch, happiness, population trend, low education, educated unemployed.
+* **Buildings:** building condition, full output storage, untapped deposits, uniform budget level.
+* **Politics:** faction standing, edict trade-offs, elections.
 
 ### Languages
 
@@ -67,7 +77,7 @@ The executable is not signed: Windows Smart App Control or SmartScreen may block
 - `Tropico.Analysis` - Island snapshot and rule engine that produces the suggestions
 - `Tropico.Localization` - Languages, translation catalogs and localizable texts
 - `Tropico.Data` - SQLite history of analysed saves (`%APPDATA%/TropicoAdvisor/history.db`, one snapshot per island and game day) and the comparison behind the Evolution tab
-- `Tropico.Cli` - Prints a save summary and the suggestions in the console
+- `Tropico.Cli` - Prints a save summary and the suggestions in the console (latest save, or the path given as argument)
 - `Tropico.Desktop` - Avalonia desktop application
 
 ```
@@ -84,6 +94,7 @@ dotnet restore
 dotnet build
 dotnet test
 dotnet run --project src/Tropico.Cli       # console summary of the latest save
+dotnet run --project src/Tropico.Cli -- "<save>.t6sav"   # ... or of a given save
 dotnet run --project src/Tropico.Desktop   # desktop application
 ```
 
