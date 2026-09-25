@@ -6,18 +6,18 @@ public class T6SaveReaderTests
 {
     private const string SampleName = "Trop6_Sav_urss Oct, 1934.t6sav";
 
-    internal static string FindSample()
+    internal static string FindSample(string sampleName = SampleName)
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
         {
-            var candidate = Path.Combine(dir.FullName, "samples", "private", SampleName);
+            var candidate = Path.Combine(dir.FullName, "samples", "private", sampleName);
             if (File.Exists(candidate)) return candidate;
         }
 
         var documents = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "My Games", "Tropico6", "Saved", "SaveGames", SampleName);
-        Assert.True(File.Exists(documents), $"Sample save not found: put '{SampleName}' in samples/private/.");
+            "My Games", "Tropico6", "Saved", "SaveGames", sampleName);
+        Assert.True(File.Exists(documents), $"Sample save not found: put '{sampleName}' in samples/private/.");
         return documents;
     }
 
