@@ -20,6 +20,8 @@ recent one and has six tabs:
 
 The app watches the save folder: when the game writes a save, the newest one is analysed and shown automatically (and recorded in the history), without pressing Refresh.
 
+The **Export report** button in the header saves the current analysis (key figures, suggestions with action and evidence) as a Markdown file in the selected language.
+
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
 light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
 

@@ -358,5 +358,10 @@
   "ui.stock": "المخزون",
   "ui.value": "القيمة",
   "ui.imported": "المستورد",
-  "ui.routes": "الطرق"
+  "ui.routes": "الطرق",
+  "ui.exportReport": "تصدير التقرير",
+  "export.action": "الإجراء المقترح",
+  "export.evidence": "الأدلة",
+  "export.keyFigures": "الأرقام الرئيسية",
+  "export.noSuggestions": "لا توجد اقتراحات لهذه اللعبة المحفوظة."
 }

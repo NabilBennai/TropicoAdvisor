@@ -58,6 +58,14 @@ public partial class MainViewModel : ViewModelBase
 
     private readonly SynchronizationContext? _context;
 
+    /// <summary>The shown analysis as Markdown in the current language, or null when nothing is shown.</summary>
+    public string? ExportMarkdown() => _report is null ? null : ReportExporter.ToMarkdown(_report, _translator.Localizer);
+
+    public string ExportFileName => (SelectedSave?.Name ?? "report") + ".md";
+
+    /// <summary>Text of the export button's dialog title, in the current language.</summary>
+    public string ExportTitle => _translator.Localizer.Get("ui.exportReport");
+
     private void Post(Action action)
     {
         if (_context is null) action();

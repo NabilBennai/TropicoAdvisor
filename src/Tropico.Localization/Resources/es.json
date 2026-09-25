@@ -358,5 +358,10 @@
   "ui.stock": "Existencias",
   "ui.value": "Valor",
   "ui.imported": "Importado",
-  "ui.routes": "Rutas"
+  "ui.routes": "Rutas",
+  "ui.exportReport": "Exportar informe",
+  "export.action": "Acción sugerida",
+  "export.evidence": "Pruebas",
+  "export.keyFigures": "Cifras clave",
+  "export.noSuggestions": "No hay sugerencias para esta partida."
 }

@@ -358,5 +358,10 @@
   "ui.stock": "Stock",
   "ui.value": "Value",
   "ui.imported": "Imported",
-  "ui.routes": "Routes"
+  "ui.routes": "Routes",
+  "ui.exportReport": "Export report",
+  "export.action": "Suggested action",
+  "export.evidence": "Evidence",
+  "export.keyFigures": "Key figures",
+  "export.noSuggestions": "No suggestions for this save."
 }

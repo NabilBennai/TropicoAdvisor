@@ -358,5 +358,10 @@
   "ui.stock": "Scorte",
   "ui.value": "Valore",
   "ui.imported": "Importato",
-  "ui.routes": "Rotte"
+  "ui.routes": "Rotte",
+  "ui.exportReport": "Esporta rapporto",
+  "export.action": "Azione suggerita",
+  "export.evidence": "Prove",
+  "export.keyFigures": "Dati chiave",
+  "export.noSuggestions": "Nessun suggerimento per questo salvataggio."
 }
