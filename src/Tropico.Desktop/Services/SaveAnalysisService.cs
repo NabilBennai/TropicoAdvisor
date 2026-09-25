@@ -26,8 +26,10 @@ public sealed class SaveAnalysisService(string? saveDirectory = null) : ISaveAna
     private const string ProfileFileName = "Trop6_Profile.t6sav";
     private const string SavePrefix = "Trop6_Sav_";
 
-    private readonly string _saveDirectory = saveDirectory ?? Path.Combine(
+    public static string DefaultDirectory { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Tropico6", "Saved", "SaveGames");
+
+    private readonly string _saveDirectory = saveDirectory ?? DefaultDirectory;
 
     public IReadOnlyList<SaveFileItem> ListSaves()
     {

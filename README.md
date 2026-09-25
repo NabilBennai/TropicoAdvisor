@@ -18,6 +18,8 @@ recent one and has six tabs:
 | Evolution | Comparison with the previous analysed save of the same island: treasury, buildings, population, factions, suggestions appeared / resolved |
 | Politics | Faction standing with its causes (edicts, buildings, demands), active edicts, constitution, elections, demands |
 
+The app watches the save folder: when the game writes a save, the newest one is analysed and shown automatically (and recorded in the history), without pressing Refresh.
+
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
 light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,14 +31,15 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>The application: real save folder, saved language choice, the shared translator used by the XAML labels.</summary>
     public MainViewModel() : this(
         new SaveAnalysisService(), Translator.Instance, new FileSettingsStore(), useSystemLanguage: true,
-        history: new HistoryService(new Tropico.Data.SqliteSnapshotStore()))
+        history: new HistoryService(new Tropico.Data.SqliteSnapshotStore()), watcher: new FileSaveWatcher(SaveAnalysisService.DefaultDirectory))
     {
     }
 
     public MainViewModel(
         ISaveAnalysisService service, Translator? translator = null, ISettingsStore? settings = null, bool useSystemLanguage = false,
-        IHistoryService? history = null)
+        IHistoryService? history = null, ISaveWatcher? watcher = null)
     {
+        _context = SynchronizationContext.Current;
         _service = service;
         _historyService = history;
         _translator = translator ?? new Translator();
@@ -50,6 +52,29 @@ public partial class MainViewModel : ViewModelBase
 
         SelectedLanguage = Languages.All.First(l => l.Code == _translator.Language.Code);
         _initialising = false;
+
+        if (watcher is not null) watcher.SaveWritten += () => Post(() => _ = FollowNewestSaveAsync());
+    }
+
+    private readonly SynchronizationContext? _context;
+
+    private void Post(Action action)
+    {
+        if (_context is null) action();
+        else _context.Post(_ => action(), null);
+    }
+
+    /// <summary>A save was written: show the newest one, even if another was selected.</summary>
+    public async Task FollowNewestSaveAsync()
+    {
+        var shown = SelectedSave?.Path;
+
+        Saves.Clear();
+        foreach (var save in _service.ListSaves()) Saves.Add(save);
+        if (Saves.Count == 0) return;
+
+        if (shown == Saves[0].Path) await LoadAsync(Saves[0]);
+        else SelectedSave = Saves[0];
     }
 
     public ObservableCollection<SaveFileItem> Saves { get; } = [];
