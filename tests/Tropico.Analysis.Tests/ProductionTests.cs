@@ -65,6 +65,7 @@ public class ProductionSnapshotTests
         Assert.Equal(0, byResource["Uranium"].Tapped);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Analyze_ReferenceSave_ReportsTheBlockedMines()
     {

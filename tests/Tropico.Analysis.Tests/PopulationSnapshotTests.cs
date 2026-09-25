@@ -6,6 +6,7 @@ public class PopulationSnapshotTests
 {
     private static readonly Lazy<T6SaveFile> Urss = new(() => T6SaveReader.Read(IslandSnapshotBuilderTests.FindSample()));
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesPopulationDetails()
     {
@@ -38,6 +39,7 @@ public class PopulationSnapshotTests
             snapshot.Population);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Analyze_ReferenceSave_ProducesPopulationAndHousingSuggestions()
     {

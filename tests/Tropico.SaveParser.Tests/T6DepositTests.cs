@@ -1,9 +1,11 @@
 namespace Tropico.SaveParser.Tests;
 
+[Trait("Category", "RealSave")]
 public class T6DepositTests
 {
     private static readonly Lazy<IReadOnlyList<T6Deposit>> Deposits = new(() => T6DepositReader.Read(T6SaveReader.Read(T6SaveReaderTests.FindSample())));
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_ReferenceSave_FindsEveryDepositByResource()
     {
@@ -15,6 +17,7 @@ public class T6DepositTests
             byResource);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_ReferenceSave_ExposesPositionRadiusAndAmount()
     {

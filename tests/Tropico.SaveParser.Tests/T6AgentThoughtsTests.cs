@@ -1,7 +1,9 @@
 namespace Tropico.SaveParser.Tests;
 
+[Trait("Category", "RealSave")]
 public class T6AgentThoughtsTests
 {
+    [Trait("Category", "RealSave")]
     [Fact]
     public void AgentCensus_ReferenceSave_CountsLivingAgentsAndThoughts()
     {

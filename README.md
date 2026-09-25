@@ -108,6 +108,8 @@ ignored). Copy them from your save directory into `samples/private/`:
 
 Without them these tests fail with a message naming the missing file; the tests that use synthetic data do not need them.
 
+Tests that decode a real save carry the trait `Category=RealSave`; continuous integration (GitHub Actions) skips them with `dotnet test --filter "Category!=RealSave"`.
+
 ### Python prototype
 
 `tools/t6sav_export.py` decodes a save and writes dumps (decoded stream, strings with offsets, object table, buildings, economy, population)

@@ -118,6 +118,7 @@ public class PoliticsRulesTests
         Assert.NotNull(finding.Suggestion);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Elections_SoonWithoutProblems_IsInfo_AndFarAwayIsSilent()
     {
@@ -131,6 +132,7 @@ public class PoliticsSnapshotTests
 {
     private static readonly Lazy<T6SaveFile> Urss = new(() => T6SaveReader.Read(IslandSnapshotBuilderTests.FindSample()));
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesFactionsOrderedFromTheMostDispleased()
     {
@@ -151,6 +153,7 @@ public class PoliticsSnapshotTests
         Assert.Equal(4, mines.Count);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesTheMandateAndEdicts()
     {
@@ -166,6 +169,7 @@ public class PoliticsSnapshotTests
         Assert.Equal(2, politics.Constitution.Count);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Analyze_ReferenceSave_ProducesPoliticalSuggestions()
     {

@@ -115,6 +115,7 @@ public class T6PoliticsTests
 
 public class T6PoliticsLargeSaveTests
 {
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_Isla_DecodesFactionsAndEdicts()
     {

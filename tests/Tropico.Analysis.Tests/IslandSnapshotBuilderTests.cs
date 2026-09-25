@@ -21,6 +21,7 @@ public class IslandSnapshotBuilderTests
         return documents;
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesParserData()
     {
@@ -37,6 +38,7 @@ public class IslandSnapshotBuilderTests
         Assert.Equal([59.0, 72.0, 1.0], snapshot.UnemployedLastSample);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Analyze_ReferenceSave_ReportsFallingTreasuryAndLowConfidenceUnemployment()
     {
@@ -48,6 +50,7 @@ public class IslandSnapshotBuilderTests
         Assert.Equal(Confidence.Uncertain, unemployment.Confidence);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesEconomyData()
     {
@@ -69,6 +72,7 @@ public class IslandSnapshotBuilderTests
         Assert.Equal(27_300, mines.Cost);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Analyze_ReferenceSave_ProducesEconomicSuggestions()
     {
@@ -82,6 +86,7 @@ public class IslandSnapshotBuilderTests
         Assert.All(findings.Where(f => f.Category is "Economy" or "Trade"), f => Assert.NotEmpty(f.Message));
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Build_ReferenceSave_ExposesChartData()
     {

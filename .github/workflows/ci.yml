@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet build --configuration Release
+      # Saves are never committed, so the tests that decode real saves are excluded here (they run locally).
+      - run: dotnet test --configuration Release --no-build --filter "Category!=RealSave"

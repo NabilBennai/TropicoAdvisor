@@ -1,5 +1,6 @@
 namespace Tropico.SaveParser.Tests;
 
+[Trait("Category", "RealSave")]
 public class T6TradeEconomyTests
 {
     private static readonly Lazy<T6TradeEconomy> Economy = new(() => T6TradeEconomyReader.Read(T6SaveReader.Read(T6SaveReaderTests.FindSample())));

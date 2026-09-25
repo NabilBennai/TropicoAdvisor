@@ -21,6 +21,7 @@ public class T6SaveReaderTests
         return documents;
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_ReferenceSave_ParsesContainer()
     {
@@ -37,6 +38,7 @@ public class T6SaveReaderTests
         Assert.Equal(10_431_425, save.DecompressedData.Length);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_ReferenceSave_ParsesNameTable()
     {
@@ -52,6 +54,7 @@ public class T6SaveReaderTests
         Assert.Contains("StructProperty", table.Names);
     }
 
+    [Trait("Category", "RealSave")]
     [Fact]
     public void Read_ReferenceSave_ParsesObjectTable()
     {

@@ -1,5 +1,6 @@
 namespace Tropico.SaveParser.Tests;
 
+[Trait("Category", "RealSave")]
 public class T6PropertyReaderTests
 {
     private static readonly Lazy<T6SaveFile> Urss = new(() => T6SaveReader.Read(T6SaveReaderTests.FindSample()));

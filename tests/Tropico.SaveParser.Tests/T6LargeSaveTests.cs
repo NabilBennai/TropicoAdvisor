@@ -1,6 +1,7 @@
 namespace Tropico.SaveParser.Tests;
 
 /// <summary>Non-regression on a second, much larger save (57 MB decompressed) to check the readers are not tuned to one island.</summary>
+[Trait("Category", "RealSave")]
 public class T6LargeSaveTests
 {
     private const string IslaName = "Trop6_Sav_Isla cuadrada Oct, 2069.t6sav";

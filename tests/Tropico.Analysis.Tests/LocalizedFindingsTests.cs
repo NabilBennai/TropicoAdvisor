@@ -3,6 +3,7 @@ using Tropico.SaveParser;
 
 namespace Tropico.Analysis.Tests;
 
+[Trait("Category", "RealSave")]
 public class LocalizedFindingsTests
 {
     private static readonly Lazy<IReadOnlyList<Finding>> Findings =
