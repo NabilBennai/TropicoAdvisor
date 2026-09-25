@@ -55,7 +55,7 @@ public class PoliticsViewModelTests
         Assert.True(rows[0].IsNegative);
         Assert.Contains("(10 +, 20 -)", rows[0].History); // positive events, then negative events
         Assert.StartsWith("edict Food for the People -10", rows[0].Causes.Replace(',', '.')); // largest effect first
-        Assert.Contains("history -3.5", rows[0].Causes.Replace(',', '.'));
+        Assert.Contains("history of past actions -3.5", rows[0].Causes.Replace(',', '.'));
 
         Assert.False(rows[1].IsNegative);
         Assert.StartsWith("+13", rows[1].Standing);

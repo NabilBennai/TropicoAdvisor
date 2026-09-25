@@ -1,4 +1,5 @@
-using System.Globalization;
+using Tropico.Localization;
+using static Tropico.Analysis.L;
 
 namespace Tropico.Analysis;
 
@@ -11,17 +12,9 @@ public sealed class FactionStandingRule : IAnalysisRule
     public const double WarningBelow = -10;   // heuristic threshold on the sum of known modifiers
     public const int DriversShown = 4;
 
-    // Hedged general leads on what each faction tends to care about.
-    private static readonly Dictionary<string, string> Concerns = new()
-    {
-        ["Religious"] = "religion (chapels, churches)",
-        ["Environmentalists"] = "pollution and nature (mines and factories weigh on them)",
-        ["Militarists"] = "the army and security",
-        ["Intellectuals"] = "education and culture",
-        ["Industrialists"] = "industry and heavy production",
-        ["Capitalists"] = "business and wealth",
-        ["Communists"] = "workers and equality",
-    };
+    // Factions with a hedged general lead on what they tend to care about (catalog keys concern.*).
+    private static readonly HashSet<string> WithConcern =
+        ["Religious", "Environmentalists", "Militarists", "Intellectuals", "Industrialists", "Capitalists", "Communists"];
 
     public IEnumerable<Finding> Evaluate(IslandSnapshot snapshot)
     {
@@ -30,50 +23,55 @@ public sealed class FactionStandingRule : IAnalysisRule
             var worst = faction.Drivers.FirstOrDefault(d => d.Value < 0);
             yield return new Finding($"politics.faction-negative.{faction.Name}",
                 faction.KnownTotal <= WarningBelow ? Severity.Warning : Severity.Info, Confidence.Probable,
-                string.Create(CultureInfo.InvariantCulture, $"{faction.Name} sit at {faction.KnownTotal:0.0} standing points (known modifiers, leader and corruption effects not stored)."))
+                T("finding.factionNegative", Term.Faction(faction.Name), faction.KnownTotal))
             {
                 Category = "Politics",
-                Suggestion = Suggestion(faction, worst),
-                Evidence = faction.Drivers.Take(DriversShown).Select(Describe).ToList(),
+                SuggestionText = Suggestion(faction, worst),
+                EvidenceTexts = faction.Drivers.Take(DriversShown).Select(Describe).ToList(),
             };
         }
     }
 
-    private static string? Suggestion(FactionStanding faction, FactionDriver? worst)
+    private static LocalizedText? Suggestion(FactionStanding faction, FactionDriver? worst)
     {
         if (worst is null) return null;
 
         return worst.Kind switch
         {
-            DriverKind.Edict => $"The main cause is the edict {GameNames.Pretty(worst.Source)}: revoking or replacing it would lift this faction, at the expense of the factions it pleases.",
-            DriverKind.Event => $"The main cause is {worst.Count} recent event(s) from {GameNames.Pretty(worst.Source)} buildings; each new one adds another penalty that fades over time.",
-            DriverKind.Demand => $"The main cause is the outcome of a demand ({GameNames.Pretty(worst.Source)}); it fades over time.",
+            DriverKind.Edict => T("suggest.faction.edict", GameNames.Pretty(worst.Source)),
+            DriverKind.Event => T("suggest.faction.event", worst.Count, GameNames.Pretty(worst.Source)),
+            DriverKind.Demand => T("suggest.faction.demand", GameNames.Pretty(worst.Source)),
             DriverKind.History => HistorySuggestion(faction),
             _ => null,
         };
     }
 
-    private static string HistorySuggestion(FactionStanding faction)
+    private static LocalizedText HistorySuggestion(FactionStanding faction)
     {
-        var history = faction.HistoryNegative is { } negative && faction.HistoryPositive is { } positive
-            ? string.Create(CultureInfo.InvariantCulture, $"Their long-term history is negative ({negative:0} negative against {positive:0} positive events). ")
-            : "";
-        return Concerns.TryGetValue(faction.Name, out var concern)
-            ? $"{history}This faction usually cares about {concern}: check its demands in the game."
-            : $"{history}Check this faction's demands in the game.";
+        var hasConcern = WithConcern.Contains(faction.Name);
+        var concern = hasConcern ? T("concern." + faction.Name) : null;
+
+        if (faction is { HistoryNegative: { } negative, HistoryPositive: { } positive })
+        {
+            return hasConcern
+                ? T("suggest.faction.history.full", negative, positive, concern)
+                : T("suggest.faction.history.noConcern", negative, positive);
+        }
+
+        return hasConcern ? T("suggest.faction.history.noStats", concern) : T("suggest.faction.history.none");
     }
 
-    private static string Describe(FactionDriver driver)
+    private static LocalizedText Describe(FactionDriver driver)
     {
         var label = driver.Kind switch
         {
-            DriverKind.History => "history of past actions",
-            DriverKind.Event => $"{GameNames.Pretty(driver.Source)} events x{driver.Count}",
-            DriverKind.Edict => $"edict {GameNames.Pretty(driver.Source)}",
-            DriverKind.Demand => $"demand {GameNames.Pretty(driver.Source)}",
-            _ => GameNames.Pretty(driver.Source),
+            DriverKind.History => T("driver.history"),
+            DriverKind.Event => T("driver.event", GameNames.Pretty(driver.Source), driver.Count),
+            DriverKind.Edict => T("driver.edict", GameNames.Pretty(driver.Source)),
+            DriverKind.Demand => T("driver.demand", GameNames.Pretty(driver.Source)),
+            _ => LocalizedText.Raw(GameNames.Pretty(driver.Source)),
         };
-        return string.Create(CultureInfo.InvariantCulture, $"{label}: {driver.Value:+0.0;-0.0}");
+        return T("evidence.driver", label, driver.Value);
     }
 }
 
@@ -96,15 +94,19 @@ public sealed class EdictTradeOffRule : IAnalysisRule
             var pleased = edict.Where(x => x.Driver.Value >= SignificantValue).OrderByDescending(x => x.Driver.Value).ToList();
             var months = snapshot.Politics.Edicts.FirstOrDefault(e => e.Name == edict.Key)?.MonthsActive;
 
+            var name = GameNames.Pretty(edict.Key);
+            var displeasedList = TextList.Of(displeased.Select(x => (object?)Term.Faction(x.Faction)));
+            var evidence = edict.OrderBy(x => x.Driver.Value).Select(x => T("evidence.edictFaction", Term.Faction(x.Faction), x.Driver.Value)).ToList();
+            if (months is { } m) evidence.Add(T("evidence.activeMonths", m));
+
             yield return new Finding($"politics.edict.{edict.Key}", Severity.Info, Confidence.Probable,
-                $"The edict {GameNames.Pretty(edict.Key)} displeases {string.Join(", ", displeased.Select(x => x.Faction))}"
-                + (pleased.Count > 0 ? $" and pleases {string.Join(", ", pleased.Select(x => x.Faction))}." : "."))
+                pleased.Count > 0
+                    ? T("finding.edict.both", name, displeasedList, TextList.Of(pleased.Select(x => (object?)Term.Faction(x.Faction))))
+                    : T("finding.edict.only", name, displeasedList))
             {
                 Category = "Politics",
-                Suggestion = "It is a trade-off: keep it while the displeased factions stay quiet, revoke it if one of them becomes a risk.",
-                Evidence = edict.OrderBy(x => x.Driver.Value)
-                    .Select(x => string.Create(CultureInfo.InvariantCulture, $"{x.Faction}: {x.Driver.Value:+0.0;-0.0}"))
-                    .Concat(months is { } m ? [$"Active for {m:N0} months"] : []).ToList(),
+                SuggestionText = T("suggest.edict"),
+                EvidenceTexts = evidence,
             };
         }
     }
@@ -119,12 +121,12 @@ public sealed class ElectionsRule : IAnalysisRule
     {
         if (snapshot.Politics.MonthsUntilElections is not { } months || months is < 0 or > WithinMonths) yield break;
 
-        var negative = snapshot.Politics.Factions.Where(f => f.KnownTotal < 0).Select(f => f.Name).ToList();
+        var negative = snapshot.Politics.Factions.Where(f => f.KnownTotal < 0).Select(f => (object?)Term.Faction(f.Name)).ToList();
         yield return new Finding("politics.elections", negative.Count > 0 ? Severity.Warning : Severity.Info, Confidence.Probable,
-            $"Elections in {months} months" + (negative.Count > 0 ? $"; factions below zero: {string.Join(", ", negative)}." : "."))
+            negative.Count > 0 ? T("finding.elections.withNegative", months, TextList.Of(negative)) : T("finding.elections", months))
         {
             Category = "Politics",
-            Suggestion = negative.Count > 0 ? "Improve the standing of the displeased factions before the vote." : null,
+            SuggestionText = negative.Count > 0 ? T("suggest.elections") : null,
         };
     }
 }

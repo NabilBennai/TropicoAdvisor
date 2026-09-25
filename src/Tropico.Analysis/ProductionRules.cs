@@ -1,4 +1,5 @@
-using System.Globalization;
+using Tropico.Localization;
+using static Tropico.Analysis.L;
 
 namespace Tropico.Analysis;
 
@@ -20,22 +21,22 @@ public sealed class FullOutputRule : IAnalysisRule
             var resource = production.Resources.FirstOrDefault(r => r.Resource == group.Key);
             var full = group.Count();
             var share = resource is { Producers: > 0 } ? (double)full / resource.Producers : 0;
-            var classes = string.Join(", ", group.Select(o => o.ClassName).Distinct().Order());
+            var classes = TextList.Of(group.Select(o => (object?)o.ClassName).Distinct().OrderBy(c => (string?)c, StringComparer.Ordinal));
 
-            var evidence = new List<string> { $"Full output stocks: {full} ({classes})" };
+            var evidence = new List<LocalizedText> { T("evidence.fullOutputs", full, classes) };
             if (resource is not null)
             {
-                evidence.Add($"Producers: {resource.Producers}");
-                evidence.Add($"Island stock: {Fmt.N0(resource.IslandStock)}");
-                evidence.Add($"Exported in the last 12 months: {Fmt.N0(resource.ExportedLast12Months)}");
+                evidence.Add(T("evidence.producers", resource.Producers));
+                evidence.Add(T("evidence.islandStock", resource.IslandStock));
+                evidence.Add(T("evidence.exported12", (double)resource.ExportedLast12Months));
             }
 
             yield return new Finding($"production.full-output.{group.Key}", full >= WarningCount || share >= WarningShare ? Severity.Warning : Severity.Info, Confidence.Probable,
-                $"{full} {group.Key} producer(s) have a full output storage.")
+                T("finding.fullOutput", full, Term.Resource(group.Key)))
             {
                 Category = "Production",
-                Suggestion = "Production stops when the storage is full: sell more of it (see Trade), add teamsters or storage, or build fewer producers.",
-                Evidence = evidence,
+                SuggestionText = T("suggest.fullOutput"),
+                EvidenceTexts = evidence,
             };
         }
     }
@@ -49,12 +50,13 @@ public sealed class UntappedDepositsRule : IAnalysisRule
         foreach (var deposit in snapshot.Production.Deposits.Where(d => d.Producers > 0 && d.Tapped < d.Deposits))
         {
             var free = deposit.Deposits - deposit.Tapped;
+            var resource = Term.Resource(deposit.Resource);
             yield return new Finding($"production.untapped-deposits.{deposit.Resource}", Severity.Info, Confidence.Uncertain,
-                $"{free} of {deposit.Deposits} {deposit.Resource} deposits appear to have no producer nearby.")
+                T("finding.untappedDeposits", free, deposit.Deposits, resource))
             {
                 Category = "Production",
-                Suggestion = $"There is room to expand {deposit.Resource} production if you want more of it (the match between producers and deposits is estimated by distance).",
-                Evidence = [$"{deposit.Resource} producers: {deposit.Producers}", $"Deposits in use (estimated): {deposit.Tapped}"],
+                SuggestionText = T("suggest.untappedDeposits", resource),
+                EvidenceTexts = [T("evidence.depositProducers", resource, deposit.Producers), T("evidence.depositsInUse", deposit.Tapped)],
             };
         }
     }
@@ -86,11 +88,11 @@ public sealed class BudgetLevelRule : IAnalysisRule
         if ((double)count / total < DominantShare || wages < WagesShare) yield break;
 
         yield return new Finding("production.budget-uniform", Severity.Info, Confidence.Uncertain,
-            string.Create(CultureInfo.InvariantCulture, $"{count:N0} of {total:N0} workplaces use the same budget level ({level}) while wages are {Fmt.Percent(wages)} of expenses."))
+            T("finding.budgetUniform", count, total, level, wages * 100))
         {
             Category = "Production",
-            Suggestion = "If this is the most generous level, lowering it on low-value workplaces would cut the wage bill (the level meaning is not verified).",
-            Evidence = [$"Wages: {Fmt.N0(economy.Wages)}", $"Total expenses: {Fmt.N0(economy.YearlyExpenses)}"],
+            SuggestionText = T("suggest.budgetUniform"),
+            EvidenceTexts = [T("evidence.wages", (double)economy.Wages), T("evidence.totalExpenses", (double)economy.YearlyExpenses)],
         };
     }
 }

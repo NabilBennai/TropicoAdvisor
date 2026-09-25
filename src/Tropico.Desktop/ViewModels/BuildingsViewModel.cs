@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Tropico.Analysis;
+using Tropico.Localization;
 
 namespace Tropico.Desktop.ViewModels;
 
@@ -13,43 +14,47 @@ public sealed record DepositRow(string Resource, string Deposits, string InUse, 
 
 public sealed class BuildingsViewModel
 {
-    public BuildingsViewModel(IslandSnapshot snapshot, IReadOnlyList<Finding> findings)
+    public BuildingsViewModel(IslandSnapshot snapshot, IReadOnlyList<Finding> findings, ILocalizer? localizer = null)
     {
+        var loc = localizer ?? Localizer.English;
+        var culture = loc.Culture;
         var production = snapshot.Production;
 
-        Total = snapshot.Buildings.Total.ToString("N0", CultureInfo.CurrentCulture);
-        Producers = production.Producers.ToString("N0", CultureInfo.CurrentCulture);
-        FullOutputs = production.FullOutputs.Count.ToString("N0", CultureInfo.CurrentCulture);
+        Total = snapshot.Buildings.Total.ToString("N0", culture);
+        Producers = production.Producers.ToString("N0", culture);
+        FullOutputs = production.FullOutputs.Count.ToString("N0", culture);
         NotBuilt = snapshot.Buildings.ByState
-            .Where(s => s.Key is not ("Built" or IslandSnapshotBuilder.UnknownState)).Sum(s => s.Value).ToString("N0", CultureInfo.CurrentCulture);
+            .Where(s => s.Key is not ("Built" or IslandSnapshotBuilder.UnknownState)).Sum(s => s.Value).ToString("N0", culture);
 
         Classes = production.Classes.Select(c => new BuildingClassRow(
             DisplayNames.Building(c.ClassName),
-            c.Count.ToString("N0", CultureInfo.CurrentCulture),
-            c.States.Count == 0 ? "all built" : string.Join(", ", c.States.OrderBy(s => s.Key, System.StringComparer.Ordinal).Select(s => $"{s.Value} {s.Key}")),
-            Dominant(c.Workmodes, DisplayNames.Workmode),
-            Dominant(c.BudgetLevels, level => level),
-            c.Outputs.Count == 0 ? "-" : string.Join(", ", c.Outputs.Select(DisplayNames.Category)),
-            c.AverageOutputFill is { } fill ? fill.ToString("P0", CultureInfo.CurrentCulture) : "-")).ToList();
+            c.Count.ToString("N0", culture),
+            c.States.Count == 0
+                ? loc.Get("vm.allBuilt")
+                : string.Join(loc.Get("list.separator"), c.States.OrderBy(s => s.Key, System.StringComparer.Ordinal).Select(s => loc.Format("fmt.countName", s.Value, new Term("state", s.Key)))),
+            Dominant(c.Workmodes, DisplayNames.Workmode, loc),
+            Dominant(c.BudgetLevels, level => level, loc),
+            c.Outputs.Count == 0 ? "-" : string.Join(loc.Get("list.separator"), c.Outputs.Select(o => loc.Term(Term.Resource(o)))),
+            c.AverageOutputFill is { } fill ? fill.ToString("P0", culture) : "-")).ToList();
 
         Resources = production.Resources.Select(r => new ProductionRow(
-            DisplayNames.Category(r.Resource),
-            r.Producers.ToString("N0", CultureInfo.CurrentCulture),
-            r.OutputStock.ToString("N0", CultureInfo.CurrentCulture),
-            r.OutputCapacity.ToString("N0", CultureInfo.CurrentCulture),
-            r.Fill.ToString("P0", CultureInfo.CurrentCulture),
-            r.FullProducers > 0 ? r.FullProducers.ToString("N0", CultureInfo.CurrentCulture) : "-",
-            r.IslandStock.ToString("N0", CultureInfo.CurrentCulture),
-            r.ExportedLast12Months.ToString("N0", CultureInfo.CurrentCulture))).ToList();
+            loc.Term(Term.Resource(r.Resource)),
+            r.Producers.ToString("N0", culture),
+            r.OutputStock.ToString("N0", culture),
+            r.OutputCapacity.ToString("N0", culture),
+            r.Fill.ToString("P0", culture),
+            r.FullProducers > 0 ? r.FullProducers.ToString("N0", culture) : "-",
+            r.IslandStock.ToString("N0", culture),
+            r.ExportedLast12Months.ToString("N0", culture))).ToList();
 
         Deposits = production.Deposits.Select(d => new DepositRow(
-            DisplayNames.Category(d.Resource),
-            d.Deposits.ToString("N0", CultureInfo.CurrentCulture),
-            d.Producers > 0 ? d.Tapped.ToString("N0", CultureInfo.CurrentCulture) : "0",
-            d.Producers.ToString("N0", CultureInfo.CurrentCulture),
-            d.AmountEach is { } amount ? amount.ToString("N0", CultureInfo.CurrentCulture) : "-")).ToList();
+            loc.Term(Term.Resource(d.Resource)),
+            d.Deposits.ToString("N0", culture),
+            d.Producers > 0 ? d.Tapped.ToString("N0", culture) : "0",
+            d.Producers.ToString("N0", culture),
+            d.AmountEach is { } amount ? amount.ToString("N0", culture) : "-")).ToList();
 
-        Findings = findings.Where(f => f.Category is "Buildings" or "Production").Select(f => new FindingViewModel(f)).ToList();
+        Findings = findings.Where(f => f.Category is "Buildings" or "Production").Select(f => new FindingViewModel(f, loc)).ToList();
     }
 
     public string Total { get; }
@@ -64,12 +69,12 @@ public sealed class BuildingsViewModel
     public bool HasFindings => Findings.Count > 0;
 
     // Most common value, with the number of other values when the class is mixed ("Profit Protocol (+1 other)").
-    public static string Dominant(IReadOnlyDictionary<string, int> counts, System.Func<string, string> format)
+    public static string Dominant(IReadOnlyDictionary<string, int> counts, System.Func<string, string> format, ILocalizer? localizer = null)
     {
         if (counts.Count == 0) return "-";
 
         var top = counts.OrderByDescending(c => c.Value).ThenBy(c => c.Key, System.StringComparer.Ordinal).First();
         var others = counts.Count - 1;
-        return others == 0 ? format(top.Key) : $"{format(top.Key)} (+{others} other)";
+        return others == 0 ? format(top.Key) : (localizer ?? Localizer.English).Format("vm.otherCount", format(top.Key), others);
     }
 }

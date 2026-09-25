@@ -1,4 +1,5 @@
-using System.Globalization;
+using Tropico.Localization;
+using static Tropico.Analysis.L;
 
 namespace Tropico.Analysis;
 
@@ -9,36 +10,24 @@ public sealed class HappinessRule : IAnalysisRule
     public const double WarningBelow = 35;
     public const int WeakestShown = 3;
 
-    // General leads only, per happiness category.
-    private static readonly Dictionary<string, string> Leads = new()
-    {
-        ["Food"] = "food production and distribution (farms, ranches, groceries)",
-        ["Health"] = "healthcare (clinics, hospitals)",
-        ["Job"] = "job availability and wages",
-        ["House"] = "housing quantity and quality",
-        ["Faith"] = "religion (chapels, churches)",
-        ["Fun"] = "entertainment (taverns, circuses, cinemas)",
-        ["Liberty"] = "freedom-related edicts and constitution choices",
-        ["Safety"] = "safety (police, army)",
-    };
-
     public IEnumerable<Finding> Evaluate(IslandSnapshot snapshot)
     {
         var details = snapshot.PopulationInfo;
         if (details.HappinessOverall is not { } overall || overall >= InfoBelow) yield break;
 
         var weakest = details.HappinessByCategory.OrderBy(c => c.Value).ThenBy(c => c.Key, StringComparer.Ordinal).Take(WeakestShown).ToList();
-        var evidence = weakest.Select(c => $"{c.Key}: {c.Value.ToString("0.0", CultureInfo.InvariantCulture)}").ToList();
-        foreach (var (level, count) in details.HappinessLevels.Where(l => l.Value > 0)) evidence.Add($"{level} happiness: {count:N0} citizens");
+        var evidence = weakest.Select(c => T("evidence.happinessCategory", new Term("happiness", c.Key), c.Value)).ToList();
+        foreach (var (level, count) in details.HappinessLevels.Where(l => l.Value > 0)) evidence.Add(T("evidence.happinessLevel", new Term("level", level), count));
 
         yield return new Finding("population.happiness", overall < WarningBelow ? Severity.Warning : Severity.Info, Confidence.Probable,
-            string.Create(CultureInfo.InvariantCulture, $"Overall happiness is {overall:0} out of 100."))
+            T("finding.happiness", overall))
         {
             Category = "Population",
-            Suggestion = weakest.Count > 0 && Leads.TryGetValue(weakest[0].Key, out var lead)
-                ? $"The weakest category is {weakest[0].Key.ToLowerInvariant()}: look at {lead}."
+            // General leads only, per happiness category (catalog keys lead.happiness.*).
+            SuggestionText = weakest.Count > 0
+                ? T("suggest.happiness", new Term("happiness", weakest[0].Key, Lower: true), T("lead.happiness." + weakest[0].Key))
                 : null,
-            Evidence = evidence,
+            EvidenceTexts = evidence,
         };
     }
 }
@@ -59,11 +48,10 @@ public sealed class PopulationTrendRule : IAnalysisRule
         var ratio = history[referenceIndex].Value > 0 ? delta / history[referenceIndex].Value : 0;
 
         yield return new Finding("population.trend", delta < 0 ? Severity.Warning : Severity.Info, Confidence.Probable,
-            string.Create(CultureInfo.InvariantCulture,
-                $"Population {(delta < 0 ? "fell" : "grew")} by {Math.Abs(delta):N0} ({Math.Abs(ratio):P0}) over the last {samples} months (now {history[^1].Value:N0})."))
+            T(delta < 0 ? "finding.population.fell" : "finding.population.grew", Math.Abs(delta), Math.Abs(ratio), samples, history[^1].Value))
         {
             Category = "Population",
-            Suggestion = delta < 0 ? "Check housing, food and healthcare: emigration and deaths drive a shrinking population." : null,
+            SuggestionText = delta < 0 ? T("suggest.populationFalling") : null,
         };
     }
 }
@@ -83,13 +71,12 @@ public sealed class HousingTierMismatchRule : IAnalysisRule
         if (mismatched.Count == 0 || details.TotalVacantHomes <= 0) yield break;
 
         yield return new Finding("housing.tier-mismatch", Severity.Info, Confidence.Uncertain,
-            string.Create(CultureInfo.InvariantCulture,
-                $"{details.TotalVacantHomes:N0} homes are vacant, but none in the tier where families are homeless ({string.Join(", ", mismatched.Select(i => PopulationDetails.HousingTiers[i]))})."))
+            T("finding.tierMismatch", details.TotalVacantHomes, TextList.Of(mismatched.Select(i => (object?)new Term("tier", PopulationDetails.HousingTiers[i])))))
         {
             Category = "Housing",
-            Suggestion = "Build housing of the tier where families are homeless, rather than more of the tier that is already vacant.",
-            Evidence = HomelessFamiliesRule.TierEvidence("Homeless families", details.HomelessFamilies)
-                .Concat(HomelessFamiliesRule.TierEvidence("Vacant homes", details.VacantHomes)).ToList(),
+            SuggestionText = T("suggest.tierMismatch"),
+            EvidenceTexts = HomelessFamiliesRule.TierEvidence("evidence.homelessFamilies", details.HomelessFamilies)
+                .Concat(HomelessFamiliesRule.TierEvidence("evidence.vacantHomes", details.VacantHomes)).ToList(),
         };
     }
 }

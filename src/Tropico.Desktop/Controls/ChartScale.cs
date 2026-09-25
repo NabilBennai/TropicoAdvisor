@@ -51,4 +51,8 @@ public static class ChartScale
     private static readonly string[] MonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     public static string FormatDate((int Year, int Month) date) => $"{MonthNames[date.Month - 1]} {date.Year}";
+
+    /// <summary>"Sep 1934" with the month abbreviation of the given culture ("sept. 1934", "سبتمبر 1934").</summary>
+    public static string FormatDate((int Year, int Month) date, CultureInfo culture) =>
+        $"{culture.DateTimeFormat.GetAbbreviatedMonthName(date.Month)} {date.Year.ToString(CultureInfo.InvariantCulture)}";
 }

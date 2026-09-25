@@ -14,8 +14,11 @@ public class IslandSnapshotBuilderTests
             if (File.Exists(candidate)) return candidate;
         }
 
-        Assert.Fail($"Sample save not found: put '{SampleName}' in samples/private/.");
-        return "";
+        var documents = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "My Games", "Tropico6", "Saved", "SaveGames", SampleName);
+        Assert.True(File.Exists(documents), $"Sample save not found: put '{SampleName}' in samples/private/.");
+        return documents;
     }
 
     [Fact]

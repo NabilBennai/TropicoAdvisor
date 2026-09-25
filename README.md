@@ -20,6 +20,21 @@ recent one and has six tabs:
 The interface uses one fixed Tropico-inspired theme (lagoon teal, sand cream, gold and coral, serif titles); it does not follow the system
 light / dark setting. Colors and styles live in `src/Tropico.Desktop/Themes/TropicoTheme.axaml`.
 
+### Languages
+
+English, French, Spanish, Italian and Arabic. The application starts in the language you last picked (language selector in the header),
+otherwise in your system language when it is supported, otherwise in English. Arabic switches the whole window to right-to-left; the
+history charts keep their left-to-right time axis and numbers keep Latin digits in every language.
+
+* Translations are JSON catalogs in `src/Tropico.Localization/Resources/` (`en.json` is the reference; a test checks that every language has
+  exactly the same keys and placeholders, and that long sentences are really translated).
+* Suggestions are stored as catalog keys plus arguments (`LocalizedText`) and rendered in the chosen language, so switching language
+  re-renders the current analysis without reading the save again.
+* Game vocabulary that has a stable meaning (resources, factions, happiness categories, education levels, finance categories, eras) is
+  translated. Building, edict, workmode and constitution names come from the game's internal identifiers and stay as the game names them.
+* `TROPICO_LANGUAGE=fr|en|es|it|ar` overrides the saved choice for one run. The choice is stored in `%APPDATA%\TropicoAdvisor\settings.json`.
+* The console tool (`Tropico.Cli`) prints in English.
+
 ### Suggestions and confidence
 
 Every suggestion (`Finding`) has a category, a severity (`Info`, `Warning`, `Critical`), the evidence it relies on, a general lead and a
@@ -38,6 +53,7 @@ game rules. What is known and what is still assumed about the save format is doc
 - `Tropico.SaveParser` - Tropico 6 save file parser: container, name table, object table, tagged properties, and typed readers
   (buildings, statistics, trade economy, deposits, agents, politics)
 - `Tropico.Analysis` - Island snapshot and rule engine that produces the suggestions
+- `Tropico.Localization` - Languages, translation catalogs and localizable texts
 - `Tropico.Data` - Local historical data storage (not implemented yet)
 - `Tropico.Cli` - Prints a save summary and the suggestions in the console
 - `Tropico.Desktop` - Avalonia desktop application

@@ -2,58 +2,71 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Tropico.Analysis;
+using Tropico.Localization;
 
 namespace Tropico.Desktop.ViewModels;
 
-public sealed class FindingViewModel(Finding finding)
+public sealed class FindingViewModel
 {
-    public string Message => finding.Message;
-    public string Label => $"{finding.Severity} · {finding.Confidence}";
-    public bool IsWarning => finding.Severity == Severity.Warning;
-    public bool IsCritical => finding.Severity == Severity.Critical;
+    public FindingViewModel(Finding finding, ILocalizer? localizer = null)
+    {
+        var loc = localizer ?? Localizer.English;
+
+        Message = finding.MessageIn(loc);
+        Label = loc.Format("vm.findingLabel", new Term("severity", finding.Severity.ToString()), new Term("confidence", finding.Confidence.ToString()));
+        IsWarning = finding.Severity == Severity.Warning;
+        IsCritical = finding.Severity == Severity.Critical;
+        IsUncertain = finding.Confidence == Confidence.Uncertain;
+        Category = finding.Category;
+        Suggestion = finding.SuggestionIn(loc);
+        Evidence = finding.EvidenceIn(loc);
+    }
+
+    public string Message { get; }
+    public string Label { get; }
+    public bool IsWarning { get; }
+    public bool IsCritical { get; }
 
     /// <summary>Findings on unverified data are shown dimmed.</summary>
-    public bool IsUncertain => finding.Confidence == Confidence.Uncertain;
+    public bool IsUncertain { get; }
 
-    public string Category => finding.Category;
-    public string? Suggestion => finding.Suggestion;
-    public bool HasSuggestion => !string.IsNullOrEmpty(finding.Suggestion);
-    public IReadOnlyList<string> Evidence => finding.Evidence;
-    public bool HasEvidence => finding.Evidence.Count > 0;
+    public string Category { get; }
+    public string? Suggestion { get; }
+    public bool HasSuggestion => !string.IsNullOrEmpty(Suggestion);
+    public IReadOnlyList<string> Evidence { get; }
+    public bool HasEvidence => Evidence.Count > 0;
 }
 
 public sealed class IslandReportViewModel
 {
     private const int TopBuildingClasses = 8;
 
-    public IslandReportViewModel(IslandReport report)
+    public IslandReportViewModel(IslandReport report, ILocalizer? localizer = null)
     {
+        var loc = localizer ?? Localizer.English;
         var snapshot = report.Snapshot;
 
-        Title = snapshot.SaveName ?? "(unnamed save)";
+        Title = snapshot.SaveName ?? loc.Get("vm.unnamedSave");
         GameBuild = snapshot.GameBuild;
-        Buildings = snapshot.Buildings.Total.ToString("N0", CultureInfo.CurrentCulture);
-        Citizens = Format(snapshot.Population.Total);
-        Treasury = Format(snapshot.Treasury);
+        Buildings = snapshot.Buildings.Total.ToString("N0", loc.Culture);
+        Citizens = Format(snapshot.Population.Total, loc.Culture);
+        Treasury = snapshot.Treasury is { } treasury ? treasury.ToString("N0", loc.Culture) : "?";
         TopBuildings = snapshot.Buildings.ByClass
             .OrderByDescending(c => c.Value).ThenBy(c => c.Key)
             .Take(TopBuildingClasses)
-            .Select(c => $"{c.Key}: {c.Value:N0}")
+            .Select(c => loc.Format("vm.classCount", c.Key, c.Value))
             .ToList();
-        Findings = report.Findings.Select(f => new FindingViewModel(f)).ToList();
-        Economy = new EconomyViewModel(snapshot, report.Findings);
-        Trade = new TradeViewModel(snapshot, report.Findings);
-        Population = new PopulationViewModel(snapshot, report.Findings);
-        BuildingsTab = new BuildingsViewModel(snapshot, report.Findings);
-        PoliticsTab = new PoliticsViewModel(snapshot, report.Findings);
+        Findings = report.Findings.Select(f => new FindingViewModel(f, loc)).ToList();
+        Economy = new EconomyViewModel(snapshot, report.Findings, loc);
+        Trade = new TradeViewModel(snapshot, report.Findings, loc);
+        Population = new PopulationViewModel(snapshot, report.Findings, loc);
+        BuildingsTab = new BuildingsViewModel(snapshot, report.Findings, loc);
+        PoliticsTab = new PoliticsViewModel(snapshot, report.Findings, loc);
     }
 
     public PoliticsViewModel PoliticsTab { get; }
-
     public BuildingsViewModel BuildingsTab { get; }
-
     public PopulationViewModel Population { get; }
-
     public EconomyViewModel Economy { get; }
     public TradeViewModel Trade { get; }
 
@@ -66,7 +79,5 @@ public sealed class IslandReportViewModel
     public IReadOnlyList<FindingViewModel> Findings { get; }
     public bool HasFindings => Findings.Count > 0;
 
-    private static string Format(double? value) => value is { } v ? v.ToString("N0", CultureInfo.CurrentCulture) : "?";
-
-    private static string Format(int? value) => value is { } v ? v.ToString("N0", CultureInfo.CurrentCulture) : "?";
+    private static string Format(int? value, CultureInfo culture) => value is { } v ? v.ToString("N0", culture) : "?";
 }

@@ -1,17 +1,7 @@
-using System.Globalization;
+using Tropico.Localization;
+using static Tropico.Analysis.L;
 
 namespace Tropico.Analysis;
-
-internal static class Fmt
-{
-    public static string N0(double value) => value.ToString("N0", CultureInfo.InvariantCulture);
-
-    public static string D1(double value) => value.ToString("0.0", CultureInfo.InvariantCulture);
-
-    public static string D2(double value) => value.ToString("0.00", CultureInfo.InvariantCulture);
-
-    public static string Percent(double ratio) => (ratio * 100).ToString("0", CultureInfo.InvariantCulture) + " %";
-}
 
 /// <summary>
 /// How many months of spending the treasury covers. Yearly expenses are a sum of the last-year buckets whose semantics are only
@@ -29,26 +19,26 @@ public sealed class TreasuryRunwayRule : IAnalysisRule
 
         var monthly = expenses / 12.0;
         var months = treasury / monthly;
-        var evidence = new[] { $"Treasury: {Fmt.N0(treasury)}", $"Expenses last year: {Fmt.N0(expenses)} (about {Fmt.N0(monthly)} per month)" };
+        LocalizedText[] evidence = [T("evidence.treasury", treasury), T("evidence.expensesLastYear", (double)expenses, monthly)];
 
         if (months < LowMonths)
         {
             yield return new Finding("economy.runway-low", months < 1 ? Severity.Critical : Severity.Warning, Confidence.Probable,
-                $"The treasury covers only about {Fmt.D1(months)} months of spending.")
+                T("finding.runway.low", months))
             {
                 Category = "Economy",
-                Suggestion = "Raise income (export stocked goods, open trade routes) or cut costs (wages, idle workplaces) before the balance turns negative.",
-                Evidence = evidence,
+                SuggestionText = T("suggest.runway.low"),
+                EvidenceTexts = evidence,
             };
         }
         else if (months > IdleMonths)
         {
             yield return new Finding("economy.runway-idle", Severity.Info, Confidence.Probable,
-                $"The treasury covers about {Fmt.N0(months)} months of spending: a large part of it is idle.")
+                T("finding.runway.idle", months))
             {
                 Category = "Economy",
-                Suggestion = "Consider investing in growth (housing, production chains, education, tourism) or in what your citizens and factions ask for.",
-                Evidence = evidence,
+                SuggestionText = T("suggest.runway.idle"),
+                EvidenceTexts = evidence,
             };
         }
     }
@@ -69,11 +59,11 @@ public sealed class WageBurdenRule : IAnalysisRule
         if (share < InfoShare) yield break;
 
         yield return new Finding("economy.wage-burden", share >= WarningShare ? Severity.Warning : Severity.Info, Confidence.Probable,
-            $"Wages are {Fmt.Percent(share)} of expenses.")
+            T("finding.wageBurden", share * 100))
         {
             Category = "Economy",
-            Suggestion = "Check the wage level of the costliest workplaces and whether some are overstaffed; extra workplaces should produce or earn more than they cost.",
-            Evidence = [$"Wages: {Fmt.N0(economy.Wages)}", $"Upkeep: {Fmt.N0(economy.Upkeep)}", $"Total expenses: {Fmt.N0(economy.YearlyExpenses)}"],
+            SuggestionText = T("suggest.wageBurden"),
+            EvidenceTexts = [T("evidence.wages", (double)economy.Wages), T("evidence.upkeep", (double)economy.Upkeep), T("evidence.totalExpenses", (double)economy.YearlyExpenses)],
         };
     }
 }
@@ -92,18 +82,16 @@ public sealed class CostCenterRule : IAnalysisRule
         var totalCost = snapshot.Economy.ClassCosts.Sum(c => c.Cost);
         if (centers.Count == 0 || totalCost <= 0) yield break;
 
-        var evidence = centers.Select(c =>
-        {
-            var perBuilding = c.Instances > 0 ? $", {Fmt.N0((double)c.Cost / c.Instances)} per building" : "";
-            return $"{c.ClassName}: {Fmt.N0(c.Cost)} ({Fmt.Percent((double)c.Cost / totalCost)} of costs, {c.Instances} buildings{perBuilding})";
-        }).ToList();
+        var evidence = centers.Select(c => c.Instances > 0
+            ? T("evidence.costCenter", c.ClassName, (double)c.Cost, (double)c.Cost / totalCost * 100, c.Instances, (double)c.Cost / c.Instances)
+            : T("evidence.costCenter.noPer", c.ClassName, (double)c.Cost, (double)c.Cost / totalCost * 100, c.Instances)).ToList();
 
         yield return new Finding("economy.cost-centers", Severity.Info, Confidence.Probable,
-            $"Costliest building classes last year: {string.Join(", ", centers.Select(c => c.ClassName))}.")
+            T("finding.costCenters", TextList.Of(centers.Select(c => (object?)c.ClassName))))
         {
             Category = "Economy",
-            Suggestion = "These have no direct income: make sure their output is sold or used, and that every building of the class is actually productive.",
-            Evidence = evidence,
+            SuggestionText = T("suggest.costCenters"),
+            EvidenceTexts = evidence,
         };
     }
 }
@@ -123,11 +111,11 @@ public sealed class ImportDependenceRule : IAnalysisRule
         if (share < InfoShare) yield break;
 
         yield return new Finding("economy.import-dependence", share >= WarningShare ? Severity.Warning : Severity.Info, Confidence.Probable,
-            $"Imports are {Fmt.Percent(share)} of expenses.")
+            T("finding.importDependence", share * 100))
         {
             Category = "Trade",
-            Suggestion = "Check whether the imported goods can be produced on the island, or bought through cheaper routes.",
-            Evidence = [$"Imports: {Fmt.N0(economy.Imports)}", $"Total expenses: {Fmt.N0(economy.YearlyExpenses)}"],
+            SuggestionText = T("suggest.importDependence"),
+            EvidenceTexts = [T("evidence.imports", (double)economy.Imports), T("evidence.totalExpenses", (double)economy.YearlyExpenses)],
         };
     }
 }
@@ -149,11 +137,11 @@ public sealed class ExportConcentrationRule : IAnalysisRule
         if (share < InfoShare) yield break;
 
         yield return new Finding("trade.export-concentration", share >= WarningShare ? Severity.Warning : Severity.Info, Confidence.Probable,
-            $"{ResourceName(top[0].Key)} makes {Fmt.Percent(share)} of export revenue.")
+            T("finding.exportConcentration", Term.Resource(ResourceName(top[0].Key)), share * 100))
         {
             Category = "Trade",
-            Suggestion = "A single dominant export exposes the income to price swings and route changes: develop a second or third export.",
-            Evidence = top.Select(e => $"{ResourceName(e.Key)}: {Fmt.N0(e.Value)} ({Fmt.Percent((double)e.Value / total)})").ToList(),
+            SuggestionText = T("suggest.exportConcentration"),
+            EvidenceTexts = top.Select(e => T("evidence.exportShare", Term.Resource(ResourceName(e.Key)), (double)e.Value, (double)e.Value / total * 100)).ToList(),
         };
     }
 
@@ -185,15 +173,15 @@ public sealed class IdleStockRule : IAnalysisRule
         foreach (var good in idle)
         {
             yield return new Finding($"trade.idle-stock.{good.Resource}", Severity.Info, Confidence.Probable,
-                $"{Fmt.N0(good.StockTotal)} {good.Resource} in stock, none exported in the last 12 months (worth about {Fmt.N0(good.StockValue)}).")
+                T("finding.idleStock", good.StockTotal, Term.Resource(good.Resource), good.StockValue))
             {
                 Category = "Trade",
-                Suggestion = $"If it is not needed for local production, sell it: {good.ExportOffers} export route(s) are offered by {string.Join(", ", good.ExportPartners)}.",
-                Evidence =
+                SuggestionText = T("suggest.idleStock", good.ExportOffers, TextList.Of(good.ExportPartners.Select(p => (object?)p))),
+                EvidenceTexts =
                 [
-                    $"Stock: {Fmt.N0(good.StockTotal)}",
-                    $"Price: {Fmt.D2(good.CurrentPrice ?? 0)}",
-                    $"Export routes offered: {good.ExportOffers}",
+                    T("evidence.stock", good.StockTotal),
+                    T("evidence.price", good.CurrentPrice ?? 0),
+                    T("evidence.exportRoutes", good.ExportOffers),
                 ],
             };
         }
@@ -220,11 +208,11 @@ public sealed class PriceOpportunityRule : IAnalysisRule
         foreach (var good in opportunities)
         {
             yield return new Finding($"trade.price-high.{good.Resource}", Severity.Info, Confidence.Uncertain,
-                $"{good.Resource} sells {Fmt.Percent(good.PriceRatio!.Value - 1)} above its average price and {Fmt.N0(good.StockTotal)} are in stock.")
+                T("finding.priceHigh", Term.Resource(good.Resource), (good.PriceRatio!.Value - 1) * 100, good.StockTotal))
             {
                 Category = "Trade",
-                Suggestion = "A good moment to sell part of the stock, if the price history is ordered oldest to newest as assumed.",
-                Evidence = [$"Price now: {Fmt.D2(good.CurrentPrice!.Value)}", $"Average before: {Fmt.D2(good.AveragePrice!.Value)}", $"Stock: {Fmt.N0(good.StockTotal)}"],
+                SuggestionText = T("suggest.priceHigh"),
+                EvidenceTexts = [T("evidence.priceNow", good.CurrentPrice!.Value), T("evidence.priceBefore", good.AveragePrice!.Value), T("evidence.stock", good.StockTotal)],
             };
         }
     }

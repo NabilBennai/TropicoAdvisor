@@ -122,7 +122,7 @@
         <Setter Property="Foreground" Value="{StaticResource TropicoCreamBrush}" />
     </Style>
     <Style Selector="TextBlock.num">
-        <Setter Property="TextAlignment" Value="Right" />
+        <Setter Property="TextAlignment" Value="End" />
     </Style>
     <Style Selector="TextBlock.negative">
         <Setter Property="Foreground" Value="{StaticResource TropicoNegativeBrush}" />

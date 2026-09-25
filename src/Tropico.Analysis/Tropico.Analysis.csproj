@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tropico.SaveParser\Tropico.SaveParser.csproj" />
+    <ProjectReference Include="..\Tropico.Localization\Tropico.Localization.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

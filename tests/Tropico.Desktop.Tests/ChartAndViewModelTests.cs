@@ -131,7 +131,7 @@ public class EconomyAndTradeViewModelTests
         var vm = new EconomyViewModel(Snapshot(), Findings);
 
         Assert.Equal(["Exports", "Rents"], vm.RevenueBreakdown.Select(r => r.Name));
-        Assert.Equal(["Wages", "Upkeeps"], vm.ExpenseBreakdown.Select(r => r.Name));
+        Assert.Equal(["Wages", "Upkeep"], vm.ExpenseBreakdown.Select(r => r.Name));
         Assert.Contains("67", vm.RevenueBreakdown[0].Share); // 2000 / 3000
     }
 
