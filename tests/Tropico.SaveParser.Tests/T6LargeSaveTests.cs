@@ -69,4 +69,19 @@ public class T6LargeSaveTests
         Assert.Equal(2_703_956, stats.YearlyFinances.TotalRevenue);
         Assert.Equal(2_069_390, stats.YearlyFinances.TotalExpenses);
     }
+
+    [Fact]
+    public void TradeEconomy_Isla_IsConsistentWithStatistics()
+    {
+        var economy = T6TradeEconomyReader.Read(Save);
+        var stats = T6IslandStatisticsReader.Read(Save);
+
+        // the calendar month index is the X axis of the history samples (verified on both saves)
+        Assert.Equal(stats.LastSample("TreasuryHistory")!.X, economy.Calendar!.MonthIndex);
+        Assert.NotEmpty(economy.Goods);
+        Assert.NotEmpty(economy.RouteOffers);
+        Assert.NotEmpty(economy.Stocks);
+        Assert.NotEmpty(economy.ClassEconomies);
+        Assert.DoesNotContain(economy.Goods, g => g.Resource == "?");
+    }
 }
