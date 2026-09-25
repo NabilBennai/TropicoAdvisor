@@ -487,3 +487,6 @@ $RECYCLE.BIN/
 # Local reverse-engineering dumps
 /dumps/
 /samples/private/
+
+# Python prototype output (dumps of local saves)
+/out/
